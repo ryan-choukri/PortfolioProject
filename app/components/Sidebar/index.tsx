@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import {
   Children,
   SidebarContainer,
@@ -11,9 +11,36 @@ import {
 } from "./SidebarStyles";
 import { SidebarItems } from "..";
 
-export default function Sidebar({ children }) {
-  const [displaySidebar, setDisplaySidebar] = useState(true); // default for SSR
-  const [isMobile, setIsMobile] = useState(false);
+type DisplayProp = { $displaySidebar: boolean };
+
+const SCSidebarContainer = SidebarContainer as unknown as React.ComponentType<
+  DisplayProp & React.HTMLAttributes<HTMLDivElement>
+>;
+const SCSidebarLogoWrapper = SidebarLogoWrapper as unknown as React.ComponentType<
+  DisplayProp & React.HTMLAttributes<HTMLDivElement>
+>;
+const SCSidebarBrand = SidebarBrand as unknown as React.ComponentType<
+  DisplayProp & React.HTMLAttributes<HTMLElement>
+>;
+const SCSidebarToggler = SidebarToggler as unknown as React.ComponentType<
+  DisplayProp & React.ButtonHTMLAttributes<HTMLButtonElement>
+>;
+const SCChildren = Children as unknown as React.ComponentType<
+  DisplayProp & React.HTMLAttributes<HTMLDivElement>
+>;
+const SCSidebarItems = SidebarItems as unknown as React.ComponentType<SidebarItemsProps>;
+
+interface SidebarItemsProps extends React.HTMLAttributes<HTMLDivElement> {
+  $displaySidebar: boolean;
+}
+
+interface SidebarProps {
+  children: ReactNode; // Define the type for children
+}
+
+export default function Sidebar({ children }: SidebarProps) {
+  const [displaySidebar, setDisplaySidebar] = useState<boolean>(true); // default for SSR
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     // On client only
@@ -33,7 +60,7 @@ export default function Sidebar({ children }) {
     };
   }, []);
 
-  const handleSidebarDisplay = (e) => {
+  const handleSidebarDisplay = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (!isMobile) {
       setDisplaySidebar(!displaySidebar);
@@ -44,39 +71,42 @@ export default function Sidebar({ children }) {
 
   return (
     <React.Fragment>
-      <SidebarContainer className="shadow-xl
+      <SCSidebarContainer
+        className="shadow-xl
   bg-gradient-to-b
   from-gray-900
   via-gray-800
-  to-gray-900 flex min-h-screen w-[10rem]" $displaySidebar={displaySidebar}>
+  to-gray-900 flex min-h-screen w-[10rem]"
+        $displaySidebar={displaySidebar}
+      >
         <SidebarWrapper>
-          <SidebarLogoWrapper $displaySidebar={displaySidebar}>
+          <SCSidebarLogoWrapper $displaySidebar={displaySidebar}>
             {/* Logo wrapper starts */}
             <SidebarLogo href="#">
               <span className="app-brand-logo demo">
                 {/* <img src={BrandLogo} alt="Brand logo" /> */}
               </span>
-              <SidebarBrand $displaySidebar={displaySidebar} className="app__brand__text">
-                {displaySidebar ? 'Outils' : 'Ou til ?'}
-              </SidebarBrand>
+              <SCSidebarBrand $displaySidebar={displaySidebar} className="app__brand__text">
+                {displaySidebar ? "Outils" : "Ou til ?"}
+              </SCSidebarBrand>
             </SidebarLogo>
             {/* Logo wrapper ends */}
 
             {/* Toggle button */}
-            <SidebarToggler $displaySidebar={displaySidebar} onClick={handleSidebarDisplay}>
+            <SCSidebarToggler $displaySidebar={displaySidebar} onClick={handleSidebarDisplay}>
               <div className="outer__circle">
                 <div className="inner__circle" />
               </div>
-            </SidebarToggler>
-          </SidebarLogoWrapper>
+            </SCSidebarToggler>
+          </SCSidebarLogoWrapper>
 
           {/* Render the SidebarItems component */}
-          <SidebarItems $displaySidebar={displaySidebar} />
+          <SCSidebarItems $displaySidebar={displaySidebar} />
         </SidebarWrapper>
-      </SidebarContainer>
+      </SCSidebarContainer>
 
       {/* Render the children */}
-      <Children $displaySidebar={displaySidebar}>{children}</Children>
+      <SCChildren $displaySidebar={displaySidebar}>{children}</SCChildren>
     </React.Fragment>
   );
 }

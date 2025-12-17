@@ -2,7 +2,7 @@
 // src/components/Sidebar/SidebarStyles.js
 import styled from "styled-components";
 // Children Component
-export const Children = styled.div`
+export const Children = styled.div<{ displaySidebar: boolean }>`
  width: 100%;
  height: 100%;
  padding-left: ${({ displaySidebar }) => (displaySidebar ? "10rem" : "10rem")};
@@ -17,7 +17,7 @@ export const SidebarWrapper = styled.div`
  flex-direction: column;
  font-size: 0.9rem;
 `;
-export const SidebarLogoWrapper = styled.div`
+export const SidebarLogoWrapper = styled.div<{ displaySidebar: boolean }>`
  padding: 0.5rem 1rem;
  margin-bottom: 1rem;
  display: flex;
@@ -73,10 +73,9 @@ export const ItemWrapper = styled.div`
  align-items: center;
  color: #fdfdfd;
 `;
-export const ItemName = styled.span`
+export const ItemName = styled.span<{ $displaySidebar: boolean }>`
  margin-left: 0.5rem;
- //display: ${({ displaySidebar }) => (displaySidebar ? "block" : "block")};
-   display: block;
+  display: block;
   @media (max-width: 468px) {
     display: none;
   }
@@ -87,7 +86,7 @@ export const ItemName = styled.span`
 export const SidebarContainer = styled.div`
  position: absolute;
  left: 0;
- width: ${({ displaySidebar }) => (displaySidebar ? "10rem" : "10rem")};
+ width: "10rem";
  height: 100vh;
  padding: 0.75rem;
 //  background: rgba(117, 117, 117, 0.06);

@@ -8,6 +8,7 @@ type City = {
 };
 
 type CurrentWeather = {
+  time: number;
   temperature: number;
   windspeed: number;
   winddirection: number;
@@ -81,7 +82,7 @@ const WheatherPage = () => {
             );
             const data = await res.json();
             if (data?.current_weather) {
-               newData.push({ ...data.current_weather, ...city });
+               newData.push({ ...data.current_weather, time: Date.now(), ...city });
                //newData[city.name] = ;
             }
          } catch {

@@ -863,11 +863,11 @@ console.log(frameRef);
         <div className="viewer" ref={viewerRef}>
           <div ref={scrimRef} className="scrim" />
           <div ref={frameRef} className="frame" />
-          {overlay && frameRef && mainRef && (
+          {overlay && frameRef.current && mainRef.current && (
             <Overlay
                 overlay={overlay}
-                frameRef={frameRef}
-                mainRef={mainRef}
+                frameRef={frameRef as React.RefObject<HTMLDivElement>}
+                mainRef={mainRef as React.RefObject<HTMLDivElement>}
                 onDone={() => rootRef.current?.setAttribute('data-enlarging', 'true')}
             />
             )}

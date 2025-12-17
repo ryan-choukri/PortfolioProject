@@ -63,28 +63,33 @@ const Game2048 = () => {
     };
 
 
-    const arrayRandom = (CurrentGrid): Grid => {
-      const firstNb = Math.floor(Math.random() * 16) + 1;
-      let secondNb = Math.floor(Math.random() * 16) + 1;
+    interface Position {
+      x: number;
+      y: number;
+    }
+
+    const arrayRandom = (CurrentGrid: Grid): Grid => {
+      const firstNb: number = Math.floor(Math.random() * 16) + 1;
+      let secondNb: number = Math.floor(Math.random() * 16) + 1;
       while (secondNb === firstNb || Math.abs(secondNb - firstNb) < 5) {
-        secondNb = Math.floor(Math.random() * 16) + 1;
+      secondNb = Math.floor(Math.random() * 16) + 1;
       }
       console.log(firstNb);
       console.log(secondNb);
-      let incrre = 0;
-      const generatedGrid = CurrentGrid.map((arr, index) => {
-        console.log('index', incrre);
-        incrre+= 4;
+      let incrre: number = 0;
+      const generatedGrid: Grid = CurrentGrid.map((arr, index) => {
+      console.log('index', incrre);
+      incrre += 4;
 
-        return arr.map((subArr, subId) => {
-          //console.log(subId + 1 + incrre);
-          if (subId + 1 + incrre - 4 === firstNb || subId + 1 + incrre - 4 === secondNb) {
-            return 2;
-          }
-          return 0;
-          console.log('subId', subId, 'index', index);
-        })
-      })
+      return arr.map((subArr, subId) => {
+        //console.log(subId + 1 + incrre);
+        if (subId + 1 + incrre - 4 === firstNb || subId + 1 + incrre - 4 === secondNb) {
+        return 2;
+        }
+        return 0;
+        console.log('subId', subId, 'index', index);
+      });
+      });
       console.log('generatedGrid', generatedGrid);
       return generatedGrid;
     };

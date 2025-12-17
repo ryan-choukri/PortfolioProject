@@ -10,7 +10,12 @@ import {
  ItemName,
 } from "./SidebarStyles";
 import { dummyData } from "..";
-const SidebarItems = ({ displaySidebar }) => {
+
+interface SidebarItemsProps {
+ displaySidebar: boolean;
+}
+
+const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
  const [activeItem, setActiveItem] = useState(0);
 return (
  <ItemsList>
