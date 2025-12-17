@@ -50,7 +50,7 @@ const projects: Project[] = [
   {
     name: 'Portfolio Website',
     description: 'Site web perso développé en Next.js et Tailwind CSS',
-    link: 'https://johndoe.dev',
+    link: 'https://ryanchoukri.com',
   },
   { name: 'Weather App', description: 'Application météo en React avec API OpenWeatherMap' },
 ];
@@ -66,7 +66,7 @@ const Card: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
   className,
 }) => (
   <div
-    className={`transform rounded-xl bg-gray-800 p-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:bg-gradient-to-r hover:from-gray-800 hover:via-gray-900 hover:to-gray-900 hover:shadow-2xl ${className || ''}`}
+    className={`transform cursor-pointer rounded-xl bg-gray-800 p-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:scale-105 hover:bg-gradient-to-r hover:from-gray-800 hover:via-gray-900 hover:to-gray-900 hover:shadow-2xl ${className || ''}`}
   >
     {children}
   </div>

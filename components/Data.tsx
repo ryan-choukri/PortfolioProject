@@ -39,8 +39,8 @@ export const SIDEBAR_DATA = [
   },
   {
     id: 5,
-    name: 'Wheather App',
-    path: 'wheather',
+    name: 'Méteo Monde',
+    path: 'meteo',
     icon: <UserIcon />,
   },
   //    {

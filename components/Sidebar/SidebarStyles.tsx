@@ -55,16 +55,16 @@ export const ItemsList = styled.ul`
   list-style: none;
 `;
 export const ItemContainer = styled.li`
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
   width: 100%;
-  padding: 0.5rem 0.25rem;
-  border-radius: 0.2rem;
+  padding: 0.5rem 0.35rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   &:hover {
-    //   background: rgba(215, 215, 215, 0.06);
+    background: rgba(117, 117, 117, 0.06);
   }
   &.active {
-    // background: rgba(117, 117, 117, 0.06);
+    background: rgba(215, 215, 215, 0.06);
   }
 `;
 export const ItemWrapper = styled.div`
@@ -87,11 +87,11 @@ export const SidebarContainer = styled.div`
   left: 0;
   width: '10rem';
   height: 100vh;
-  padding: 0.75rem;
+  padding: 0.5rem;
   //  background: rgba(117, 117, 117, 0.06);
-  border-right: 1px solid #d4d8dd;
+  // border-right: 1px solid #d4d8dd;
   overflow-x: hidden;
-  box-shadow: 8px 0px 12px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 7px 0px 15px 0px rgb(0 0 0 / 15%);
   ${ItemWrapper} {
     justify-content: left;
     @media (max-width: 468px) {
@@ -99,7 +99,7 @@ export const SidebarContainer = styled.div`
     }
   }
   &:hover {
-    box-shadow: 8px 0px 12px 0px rgba(85, 83, 83, 0.1);
+    box-shadow: 7px 0px 15px 0px rgb(0 0 0 / 22%);
   }
   ::-webkit-scrollbar {
     width: 4px;

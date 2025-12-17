@@ -19,7 +19,9 @@ const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
           key={index}
           onClick={() => setActiveItem(itemData.id)}
           /* Adding active class when the user clicks */
-          className={itemData.id === activeItem ? 'active' : ''}
+          className={
+            'text-sm font-semibold text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')
+          }
         >
           <Link href={itemData.path}>
             <ItemWrapper>
