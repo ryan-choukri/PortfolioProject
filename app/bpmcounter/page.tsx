@@ -1,6 +1,6 @@
 'use client';
 
-import BpmCounter from '@/app/components/BpmCounter';
+import BpmCounter from '@/components/BpmCounter';
 
 const CookieClikers = () => {
   return <BpmCounter />;

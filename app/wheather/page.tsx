@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useState, useMemo } from 'react';
-import DomeGallery from '@/app/components/DomeGallery';
+import DomeGallery from '@/components/DomeGallery';
 
 type City = {
   name: string;

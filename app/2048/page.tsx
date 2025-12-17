@@ -1,5 +1,5 @@
 'use client';
-import Game2048 from '@/app/components/Game2048';
+import Game2048 from '@/components/Game2048';
 import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
