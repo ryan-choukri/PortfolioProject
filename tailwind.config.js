@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-   theme: {
+  theme: {
     extend: {
       keyframes: {
         shine: {
@@ -14,10 +14,7 @@ module.exports = {
     },
   },
   important: true, // toutes les classes Tailwind auront !important
-  content: [
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./app/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {},
   },

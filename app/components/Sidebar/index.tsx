@@ -1,5 +1,5 @@
-"use client";
-import React, { useState, useEffect, ReactNode } from "react";
+'use client';
+import React, { useState, useEffect, ReactNode } from 'react';
 import {
   Children,
   SidebarContainer,
@@ -8,8 +8,8 @@ import {
   SidebarLogo,
   SidebarBrand,
   SidebarToggler,
-} from "./SidebarStyles";
-import { SidebarItems } from "..";
+} from './SidebarStyles';
+import { SidebarItems } from '..';
 
 type DisplayProp = { $displaySidebar: boolean };
 
@@ -53,10 +53,10 @@ export default function Sidebar({ children }: SidebarProps) {
     checkMobile();
 
     // Listen to window resize
-    window.addEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
 
     return () => {
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
 
@@ -72,11 +72,7 @@ export default function Sidebar({ children }: SidebarProps) {
   return (
     <React.Fragment>
       <SCSidebarContainer
-        className="shadow-xl
-  bg-gradient-to-b
-  from-gray-900
-  via-gray-800
-  to-gray-900 flex min-h-screen w-[10rem]"
+        className="flex min-h-screen w-[10rem] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-xl"
         $displaySidebar={displaySidebar}
       >
         <SidebarWrapper>
@@ -87,7 +83,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 {/* <img src={BrandLogo} alt="Brand logo" /> */}
               </span>
               <SCSidebarBrand $displaySidebar={displaySidebar} className="app__brand__text">
-                {displaySidebar ? "Outils" : "Ou til ?"}
+                {displaySidebar ? 'Outils' : 'Ou til ?'}
               </SCSidebarBrand>
             </SidebarLogo>
             {/* Logo wrapper ends */}

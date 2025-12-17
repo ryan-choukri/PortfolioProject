@@ -1,11 +1,9 @@
-"use client";
+'use client';
 
-import BpmCounter from "@/app/components/BpmCounter"
-
-
+import BpmCounter from '@/app/components/BpmCounter';
 
 const CookieClikers = () => {
-   return <BpmCounter />
+  return <BpmCounter />;
 };
 
 export default CookieClikers;

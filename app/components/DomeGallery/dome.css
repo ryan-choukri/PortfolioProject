@@ -8,7 +8,7 @@
 
   /* 🔥 Responsive core variables */
   /* --radius: clamp(260px, 38vmin, 560px); */
-      --radius: 28vw;
+  --radius: 28vw;
 
   --viewer-pad: clamp(16px, 4vmin, 72px);
 
@@ -106,17 +106,14 @@ main.sphere-main {
   backface-visibility: hidden;
   transition: transform 300ms;
 
-  transform:
-    rotateY(
+  transform: rotateY(
       calc(
-        var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2))
-        + var(--rot-y-delta, 0deg)
+        var(--rot-y) * (var(--offset-x) + ((var(--item-size-x) - 1) / 2)) + var(--rot-y-delta, 0deg)
       )
     )
     rotateX(
       calc(
-        var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2))
-        + var(--rot-x-delta, 0deg)
+        var(--rot-x) * (var(--offset-y) - ((var(--item-size-y) - 1) / 2)) + var(--rot-x-delta, 0deg)
       )
     )
     translateZ(var(--radius));
@@ -242,16 +239,14 @@ main.sphere-main {
 
 @media (max-width: 640px) {
   .item__image {
-  border-radius: 16px;
-}
-
-@media (max-width: 340px) {
-  .item__image {
-    border-radius: 10px;
+    border-radius: 16px;
   }
-}
 
-
+  @media (max-width: 340px) {
+    .item__image {
+      border-radius: 10px;
+    }
+  }
 
   .sphere-root {
     --radius: 28vw;
@@ -268,7 +263,6 @@ main.sphere-main {
    LARGE SCREENS
 ================================ */
 @media (min-width: 1440px) {
-
   .item__image {
     border-radius: 30px;
   }

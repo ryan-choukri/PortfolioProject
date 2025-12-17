@@ -6,7 +6,10 @@ import Image from 'next/image';
 import './dome.css';
 
 type City = {
-  name: string, lat: number, lon: number, src: string;
+  name: string;
+  lat: number;
+  lon: number;
+  src: string;
 };
 
 type CityAndWheather = {
@@ -18,7 +21,7 @@ type CityAndWheather = {
 } & City;
 
 type DomeGalleryProps = {
-  allCities: CityAndWheather[]; 
+  allCities: CityAndWheather[];
   fit?: number;
   fitBasis?: 'auto' | 'min' | 'max' | 'width' | 'height';
   minRadius?: number;
@@ -52,7 +55,6 @@ type OverlayState = {
   from: DOMRect;
 };
 
-
 // Exemple de map pour les icônes météo
 const weatherCodeMap: Record<number, string> = {
   0: '☀️', // clair
@@ -64,14 +66,14 @@ const weatherCodeMap: Record<number, string> = {
   61: '🌧️', // pluie
   71: '❄️', // neige
   80: '⛈️', // orage
-  95: '🌩️' // forte tempête
+  95: '🌩️', // forte tempête
 };
 
 const DEFAULTS = {
   maxVerticalRotationDeg: 23,
   dragSensitivity: 10,
   enlargeTransitionMs: 300,
-  segments: 20
+  segments: 20,
 };
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
@@ -91,18 +93,18 @@ const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
 function buildItems(pool: CityAndWheather[], seg: number): ItemDef[] {
   const xCols = Array.from({ length: seg }, (_, i) => -23 + i * 2);
   console.log('xCols. : ', xCols);
-  
+
   const evenYs = [-4, -2, 0, 2, 4];
   const oddYs = [-3, -1, 1, 3, 5];
 
   const coords = xCols.flatMap((x, c) => {
     const ys = c % 2 === 0 ? evenYs : oddYs;
-    return ys.map(y => ({ x, y, sizeX: 2, sizeY: 2 }));
+    return ys.map((y) => ({ x, y, sizeX: 2, sizeY: 2 }));
   });
 
   const totalSlots = coords.length;
   if (pool.length === 0) {
-    return coords.map(c => ({ ...c, src: '', name: '' }));
+    return coords.map((c) => ({ ...c, src: '', name: '' }));
   }
   if (pool.length > totalSlots) {
     console.warn(
@@ -111,15 +113,18 @@ function buildItems(pool: CityAndWheather[], seg: number): ItemDef[] {
   }
 
   console.log('pool', pool);
-  
-  const normalizedImages = pool.map(image => {
+
+  const normalizedImages = pool.map((image) => {
     if (typeof image === 'string') {
       return { src: image, name: '' };
     }
     return { src: image.src || '', name: image.name || '' };
   });
 
-  const usedImages = Array.from({ length: totalSlots }, (_, i) => normalizedImages[i % normalizedImages.length]);
+  const usedImages = Array.from(
+    { length: totalSlots },
+    (_, i) => normalizedImages[i % normalizedImages.length]
+  );
 
   for (let i = 1; i < usedImages.length; i++) {
     if (usedImages[i].src === usedImages[i - 1].src) {
@@ -137,12 +142,18 @@ function buildItems(pool: CityAndWheather[], seg: number): ItemDef[] {
   return coords.map((c, i) => ({
     ...c,
     src: usedImages[i].src,
-    name: usedImages[i].name
+    name: usedImages[i].name,
   }));
 }
 
 /* Calcul la rotation de base de chaque tile selon sa position sur la sphère */
-function computeItemBaseRotation(offsetX: number, offsetY: number, sizeX: number, sizeY: number, segments: number) {
+function computeItemBaseRotation(
+  offsetX: number,
+  offsetY: number,
+  sizeX: number,
+  sizeY: number,
+  segments: number
+) {
   const unit = 360 / segments / 2;
   const rotateY = unit * (offsetX + (sizeX - 1) / 2);
   const rotateX = unit * (offsetY - (sizeY - 1) / 2);
@@ -150,7 +161,19 @@ function computeItemBaseRotation(offsetX: number, offsetY: number, sizeX: number
 }
 
 export default function DomeGallery({
-  allCities = [{ time: 0, temperature: 0, windspeed: 0, winddirection: 0, weathercode: 0, name: "Tokyo", lat: 35.6895, lon: 139.6917, src: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=800&q=80"}],
+  allCities = [
+    {
+      time: 0,
+      temperature: 0,
+      windspeed: 0,
+      winddirection: 0,
+      weathercode: 0,
+      name: 'Tokyo',
+      lat: 35.6895,
+      lon: 139.6917,
+      src: 'https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&w=800&q=80',
+    },
+  ],
   fit = 0.6,
   fitBasis = 'auto',
   minRadius = 50,
@@ -166,7 +189,7 @@ export default function DomeGallery({
   openedImageHeight = '60vh',
   imageBorderRadius = '20px',
   openedImageBorderRadius = '30px',
-  grayscale = false
+  grayscale = false,
 }: DomeGalleryProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -224,7 +247,7 @@ export default function DomeGallery({
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const ro = new ResizeObserver(entries => {
+    const ro = new ResizeObserver((entries) => {
       const cr = entries[0].contentRect;
       const w = Math.max(1, cr.width),
         h = Math.max(1, cr.height);
@@ -256,7 +279,7 @@ export default function DomeGallery({
 
       const viewerPad = Math.max(8, Math.round(minDim * padFactor));
       console.log(viewerPad);
-      
+
       root.style.setProperty('--radius', `${lockedRadiusRef.current}px`);
       root.style.setProperty('--viewer-pad', `${viewerPad}px`);
       root.style.setProperty('--overlay-blur-color', overlayBlurColor);
@@ -304,7 +327,7 @@ export default function DomeGallery({
     imageBorderRadius,
     openedImageBorderRadius,
     openedImageWidth,
-    openedImageHeight
+    openedImageHeight,
   ]);
 
   // Initialisation de la transformation
@@ -342,7 +365,11 @@ export default function DomeGallery({
           inertiaRAF.current = null;
           return;
         }
-        const nextX = clamp(rotationRef.current.x - vY / 200, -maxVerticalRotationDeg, maxVerticalRotationDeg);
+        const nextX = clamp(
+          rotationRef.current.x - vY / 200,
+          -maxVerticalRotationDeg,
+          maxVerticalRotationDeg
+        );
         const nextY = wrapAngleSigned(rotationRef.current.y + vX / 200);
         rotationRef.current = { x: nextX, y: nextY };
         applyTransform(nextX, nextY);
@@ -412,124 +439,128 @@ export default function DomeGallery({
 
           movedRef.current = false;
         }
-      }
+      },
     },
     { target: mainRef, eventOptions: { passive: true } }
   );
 
-
-function Overlay({
+  function Overlay({
     overlay,
     frameRef,
     mainRef,
-    onDone
-    }: {
+    onDone,
+  }: {
     overlay: OverlayState;
     frameRef: React.RefObject<HTMLDivElement>;
     mainRef: React.RefObject<HTMLDivElement>;
     onDone: () => void;
-    }) {
+  }) {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!ref.current || !frameRef.current || !mainRef.current) return;
+      if (!ref.current || !frameRef.current || !mainRef.current) return;
 
-        const from = overlay.from;
-        const to = frameRef.current.getBoundingClientRect();
-        const main = mainRef.current.getBoundingClientRect();
-        openStartedAtRef.current = performance.now();
-        focusedElRef.current = ref.current;
+      const from = overlay.from;
+      const to = frameRef.current.getBoundingClientRect();
+      const main = mainRef.current.getBoundingClientRect();
+      openStartedAtRef.current = performance.now();
+      focusedElRef.current = ref.current;
 
-        const dx = from.left - to.left;
-        const dy = from.top - to.top;
-        const sx = from.width / to.width;
-        const sy = from.height / to.height;
+      const dx = from.left - to.left;
+      const dy = from.top - to.top;
+      const sx = from.width / to.width;
+      const sy = from.height / to.height;
 
-        ref.current.style.transform = `
+      ref.current.style.transform = `
         translate(${dx}px, ${dy}px) scale(${sx}, ${sy})
         `;
 
-        requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
         ref.current!.style.opacity = '1';
         ref.current!.style.transform = 'translate(0,0) scale(1)';
         onDone();
-        });
+      });
     }, [overlay, frameRef, mainRef, onDone]);
     console.log('frameRef');
     console.log(frameRef.current!.getBoundingClientRect());
-    const cityData = allCities.find(c => c.name === overlay.name);
+    const cityData = allCities.find((c) => c.name === overlay.name);
     if (!cityData) return null;
     console.log(cityData);
     const weatherIcon = weatherCodeMap[cityData.weathercode] || '🌤️';
     const displayDate = new Date(cityData.time);
     const formattedHour = displayDate.toLocaleTimeString('fr-FR', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
     });
 
     return (
-        <div
+      <div
         ref={ref}
         className="enlarge"
         style={{
-            position: 'absolute',
-            left: frameRef.current!.getBoundingClientRect().left -
+          position: 'absolute',
+          left:
+            frameRef.current!.getBoundingClientRect().left -
             mainRef.current!.getBoundingClientRect().left,
-            top: frameRef.current!.getBoundingClientRect().top -
+          top:
+            frameRef.current!.getBoundingClientRect().top -
             mainRef.current!.getBoundingClientRect().top,
-            width: frameRef.current!.getBoundingClientRect().width,
-            height: frameRef.current!.getBoundingClientRect().height,
-            opacity: 0,
-            transition: 'transform 300ms ease, opacity 300ms ease',
-            transformOrigin: 'top left',
-            zIndex: 30
+          width: frameRef.current!.getBoundingClientRect().width,
+          height: frameRef.current!.getBoundingClientRect().height,
+          opacity: 0,
+          transition: 'transform 300ms ease, opacity 300ms ease',
+          transformOrigin: 'top left',
+          zIndex: 30,
         }}
-        >
-        {cityData && 
-            (
-                <div
-                style={{
-                    display: 'flex',
-                    gridTemplateColumns: '1fr 1fr auto',
+      >
+        {cityData && (
+          <div
+            style={{
+              display: 'flex',
+              gridTemplateColumns: '1fr 1fr auto',
 
-                    background: 'rgb(37 37 37 / 60%)',
-                    backdropFilter: 'blur(7px)',
-                    top: '0px',
-                    margin: '34px',
-                    minWidth: '88%',
-                    position: 'absolute',
-                    padding: '12px 16px',
-                    color: 'white',
-                    borderRadius: '16px',
-                    pointerEvents: 'none',
-                    zIndex: 40,
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.5)',
-                    fontFamily: 'sans-serif',
-                    transition: 'transform 0.2s ease, opacity 0.2s ease'
-                }}
-                >
+              background: 'rgb(37 37 37 / 60%)',
+              backdropFilter: 'blur(7px)',
+              top: '0px',
+              margin: '34px',
+              minWidth: '88%',
+              position: 'absolute',
+              padding: '12px 16px',
+              color: 'white',
+              borderRadius: '16px',
+              pointerEvents: 'none',
+              zIndex: 40,
+              boxShadow: '0 8px 20px rgba(0,0,0,0.5)',
+              fontFamily: 'sans-serif',
+              transition: 'transform 0.2s ease, opacity 0.2s ease',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 3, gap: '4px' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '20px' }}>{cityData.name}</div>
+              <div style={{ fontSize: '14px', opacity: 0.8 }}>🕒 {formattedHour}</div>
+            </div>
 
+            {/* Colonne milieu : température, vent */}
+            <div
+              style={{
+                marginBottom: '8px',
+                display: 'flex',
+                flexDirection: 'column-reverse',
+                flex: 4,
+                gap: '4px',
+              }}
+            >
+              <div style={{ fontSize: '14px', opacity: 0.8 }}>
+                <div style={{ fontSize: '14px' }}>{cityData.temperature}°C</div>
+                💨 {cityData.windspeed} km/h {cityData.winddirection}°
+              </div>
+            </div>
 
+            {/* Colonne droite : icône météo */}
+            <div style={{ fontSize: '42px', flex: 4, textAlign: 'center' }}>{weatherIcon}</div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', flex: 3, gap: '4px' }}>
-                    <div style={{ fontWeight: 'bold', fontSize: '20px' }}>{cityData.name}</div>
-                    <div style={{ fontSize: '14px', opacity: 0.8 }}>🕒 {formattedHour}</div>
-                </div>
-
-                {/* Colonne milieu : température, vent */}
-                <div style={{ marginBottom: '8px', display: 'flex', flexDirection: 'column-reverse', flex: 4, gap: '4px' }}>
-                    <div style={{ fontSize: '14px', opacity: 0.8 }}>
-                    <div style={{ fontSize: '14px' }}>{cityData.temperature}°C</div>
-                    💨 {cityData.windspeed} km/h {cityData.winddirection}°
-                    </div>
-                </div>
-
-                {/* Colonne droite : icône météo */}
-                <div style={{ fontSize: '42px', flex: 4, textAlign: 'center' }}>{weatherIcon}</div>
-
-
-                    {/* <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
+            {/* <div style={{ fontWeight: 'bold', fontSize: '16px' }}>
                         {cityData.name}
                     </div>
                     <div style={{ color: '#cbcbcb', fontSize: '13px', marginBottom: '4px' }}>
@@ -546,63 +577,57 @@ function Overlay({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px' }}>
                         <span>🧭</span> {cityData.winddirection}°
                     </div> */}
-
-                </div>
-            )
-        }
+          </div>
+        )}
         {overlay.src ? (
-            <Image
-                src={overlay.src}
-                alt={overlay.name}
-                fill
-                sizes="100vw"
-                style={{ objectFit: 'cover' }}
-                draggable={false}
-            />
-            ) : null}
+          <Image
+            src={overlay.src}
+            alt={overlay.name}
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover' }}
+            draggable={false}
+          />
+        ) : null}
         {/* <img
             src={overlay.src}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             draggable={false}
         /> */}
-        </div>
+      </div>
     );
-    }
+  }
 
+  // NOUVEAU CODE
+  const openItemFromElement = useCallback(
+    (el: HTMLElement) => {
+      if (openingRef.current) return;
 
+      openingRef.current = true;
+      lockScroll();
 
-        // NOUVEAU CODE 
-    const openItemFromElement = useCallback((el: HTMLElement) => {
-    if (openingRef.current) return;
+      const parent = el.parentElement as HTMLElement;
+      const src = parent.dataset.src || (el.querySelector('img') as HTMLImageElement)?.src;
 
-    openingRef.current = true;
-    lockScroll();
+      const name = parent.dataset.name || (el.querySelector('img') as HTMLImageElement)?.name;
 
-    const parent = el.parentElement as HTMLElement;
-    const src =
-        parent.dataset.src ||
-        (el.querySelector('img') as HTMLImageElement)?.src;
+      if (!src || !frameRef.current || !mainRef.current) return;
+      console.log('parent.dataset');
+      console.log(parent.dataset);
 
-    const name =
-        parent.dataset.name ||
-        (el.querySelector('img') as HTMLImageElement)?.name;
+      const tileRect = el.getBoundingClientRect();
 
-    if (!src || !frameRef.current || !mainRef.current) return;
-    console.log('parent.dataset');
-    console.log(parent.dataset);
-
-    const tileRect = el.getBoundingClientRect();
-
-    setOverlay({
+      setOverlay({
         name,
         src,
-        from: tileRect
-    });
+        from: tileRect,
+      });
 
-    el.style.visibility = 'hidden';
-    }, [lockScroll]);
-        // NOUVEAU CODE 
-
+      el.style.visibility = 'hidden';
+    },
+    [lockScroll]
+  );
+  // NOUVEAU CODE
 
   const onTileClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -633,27 +658,26 @@ function Overlay({
     if (!scrim) return;
 
     const close = () => {
-        console.log('PASSAGE DANS CLOSE');
-                console.log(performance.now(), openStartedAtRef.current, openStartedAtRef.current < 250);
+      console.log('PASSAGE DANS CLOSE');
+      console.log(performance.now(), openStartedAtRef.current, openStartedAtRef.current < 250);
 
       if (performance.now() - openStartedAtRef.current < 250) return;
 
-
       const el = focusedElRef.current;
-    console.log('2 PASSAGE DANS CLOSE');
+      console.log('2 PASSAGE DANS CLOSE');
 
       if (!el) return;
-            console.log('2 PASSAGE DANS CLOSE');
+      console.log('2 PASSAGE DANS CLOSE');
 
       const parent = el.parentElement as HTMLElement;
       const overlay = viewerRef.current?.querySelector('.enlarge') as HTMLElement | null;
       if (!overlay) return;
-            console.log('3 PASSAGE DANS CLOSE');
+      console.log('3 PASSAGE DANS CLOSE');
 
       const refDiv = parent.querySelector('.item__image--reference') as HTMLElement | null;
 
       const originalPos = originalTilePositionRef.current;
-                  console.log('4 PASSAGE DANS CLOSE');
+      console.log('4 PASSAGE DANS CLOSE');
 
       if (!originalPos) {
         overlay.remove();
@@ -676,14 +700,14 @@ function Overlay({
         left: originalPos.left - rootRect.left,
         top: originalPos.top - rootRect.top,
         width: originalPos.width,
-        height: originalPos.height
+        height: originalPos.height,
       };
 
       const overlayRelativeToRoot = {
         left: currentRect.left - rootRect.left,
         top: currentRect.top - rootRect.top,
         width: currentRect.width,
-        height: currentRect.height
+        height: currentRect.height,
       };
 
       const animatingOverlay = document.createElement('div');
@@ -752,7 +776,10 @@ function Overlay({
                 el.style.transition = '';
                 el.style.opacity = '';
                 openingRef.current = false;
-                if (!draggingRef.current && rootRef.current?.getAttribute('data-enlarging') !== 'true') {
+                if (
+                  !draggingRef.current &&
+                  rootRef.current?.getAttribute('data-enlarging') !== 'true'
+                ) {
                   document.body.classList.remove('dg-scroll-lock');
                 }
               }, 300);
@@ -762,7 +789,7 @@ function Overlay({
       };
 
       animatingOverlay.addEventListener('transitionend', cleanup, {
-        once: true
+        once: true,
       });
     };
 
@@ -788,17 +815,16 @@ function Overlay({
   useEffect(() => {
     let raf: number;
     const animate = () => {
-        rotationRef.current.y = wrapAngleSigned(rotationRef.current.y - 0.3); // vitesse en degrés par frame
-        applyTransform(rotationRef.current.x, rotationRef.current.y);
-        raf = requestAnimationFrame(animate);
+      rotationRef.current.y = wrapAngleSigned(rotationRef.current.y - 0.3); // vitesse en degrés par frame
+      applyTransform(rotationRef.current.x, rotationRef.current.y);
+      raf = requestAnimationFrame(animate);
     };
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
-    }, []);
+  }, []);
 
-
-console.log(frameRef);
-//openedImageHeight
+  console.log(frameRef);
+  //openedImageHeight
 
   return (
     <div
@@ -811,7 +837,7 @@ console.log(frameRef);
           ['--overlay-blur-color' as any]: overlayBlurColor,
           ['--tile-radius' as any]: imageBorderRadius,
           ['--enlarge-radius' as any]: openedImageBorderRadius,
-          ['--image-filter' as any]: grayscale ? 'grayscale(1)' : 'none'
+          ['--image-filter' as any]: grayscale ? 'grayscale(1)' : 'none',
         } as React.CSSProperties
       }
     >
@@ -833,23 +859,28 @@ console.log(frameRef);
                     ['--offset-x' as any]: it.x,
                     ['--offset-y' as any]: it.y,
                     ['--item-size-x' as any]: it.sizeX,
-                    ['--item-size-y' as any]: it.sizeY
+                    ['--item-size-y' as any]: it.sizeY,
                   } as React.CSSProperties
                 }
               >
-                <div className="item__image" role="button" tabIndex={0} aria-label={it.name || 'Open image'} onClick={onTileClick} onPointerUp={onTilePointerUp}>
-                    {it.src ? (
+                <div
+                  className="item__image"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={it.name || 'Open image'}
+                  onClick={onTileClick}
+                  onPointerUp={onTilePointerUp}
+                >
+                  {it.src ? (
                     <Image
-                        src={it.src}
-                        alt={it.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        style={{ objectFit: 'cover', pointerEvents: 'none' }}
+                      src={it.src}
+                      alt={it.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ objectFit: 'cover', pointerEvents: 'none' }}
                     />
-                    ) : null}
-
+                  ) : null}
                 </div>
-
               </div>
             ))}
           </div>
@@ -865,13 +896,12 @@ console.log(frameRef);
           <div ref={frameRef} className="frame" />
           {overlay && frameRef.current && mainRef.current && (
             <Overlay
-                overlay={overlay}
-                frameRef={frameRef as React.RefObject<HTMLDivElement>}
-                mainRef={mainRef as React.RefObject<HTMLDivElement>}
-                onDone={() => rootRef.current?.setAttribute('data-enlarging', 'true')}
+              overlay={overlay}
+              frameRef={frameRef as React.RefObject<HTMLDivElement>}
+              mainRef={mainRef as React.RefObject<HTMLDivElement>}
+              onDone={() => rootRef.current?.setAttribute('data-enlarging', 'true')}
             />
-            )}
-
+          )}
         </div>
       </main>
     </div>

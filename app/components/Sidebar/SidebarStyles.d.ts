@@ -1,5 +1,5 @@
-declare module "app/components/Sidebar/SidebarStyles" {
-  import React from "react";
+declare module 'app/components/Sidebar/SidebarStyles' {
+  import React from 'react';
   export const Children: React.ComponentType<React.PropsWithChildren>;
   export const SidebarContainer: React.ComponentType<React.HTMLAttributes<HTMLDivElement>>;
   export const SidebarWrapper: React.ComponentType<React.HTMLAttributes<HTMLDivElement>>;
