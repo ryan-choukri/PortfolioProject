@@ -531,7 +531,7 @@ export default function DomeGallery({
               background: 'rgb(37 37 37 / 60%)',
               backdropFilter: 'blur(7px)',
               top: '0px',
-              margin: '5vw',
+              margin: 'min(5vw, 30px)',
               minWidth: '88%',
               position: 'absolute',
               padding: '12px 16px',

@@ -7,10 +7,10 @@ import { ItemsList, ItemContainer, ItemWrapper, ItemName } from './SidebarStyles
 import { dummyData } from '..';
 
 interface SidebarItemsProps {
-  displaySidebar: boolean;
+  $displaySidebar: boolean;
 }
 
-const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
+const SidebarItems = ({ $displaySidebar }: SidebarItemsProps) => {
   const router = useRouter();
   const [activeItem, setActiveItem] = useState(0);
   return (
@@ -20,7 +20,14 @@ const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
           {index === 1 ? (
             <>
               <hr className="sidebar-separator" />
-              <p className="pt-1 text-center text-xs font-semibold text-gray-300">Mes Projets</p>
+              <p
+                className={
+                  'pt-2 text-center text-xs font-semibold text-gray-300 ' +
+                  (!$displaySidebar ? 'text-[10px]' : '')
+                }
+              >
+                <span className={!$displaySidebar ? '!hidden' : ''}>Mes </span>Projets
+              </p>
             </>
           ) : null}
           <ItemContainer
@@ -36,7 +43,7 @@ const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
           >
             <ItemWrapper style={{ padding: '0.5rem 0.35rem' }}>
               {itemData.icon}
-              <ItemName $displaySidebar={displaySidebar}>{itemData.name}</ItemName>
+              <ItemName $displaySidebar={$displaySidebar}>{itemData.name}</ItemName>
             </ItemWrapper>
           </ItemContainer>
         </>
