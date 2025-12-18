@@ -43,12 +43,12 @@ export const SIDEBAR_DATA = [
     path: 'meteo',
     icon: <UserIcon />,
   },
-  //    {
-  //    id: 6,
-  //    name: "roles & permissions",
-  //    path: "roles",
-  //    icon: <RolesIcon />,
-  //    },
+  {
+    id: 6,
+    name: 'smile !',
+    path: 'smile',
+    icon: <RolesIcon />,
+  },
   //    {
   //    id: 7,
   //    name: "pages",
