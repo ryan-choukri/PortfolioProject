@@ -4,7 +4,9 @@ import styled from 'styled-components';
 // Children Component
 export const Children = styled.div<{ displaySidebar: boolean }>`
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-left: ${({ displaySidebar }) => (displaySidebar ? '10rem' : '10rem')};
   @media (max-width: 468px) {
     padding-left: 3rem;
@@ -57,7 +59,6 @@ export const ItemsList = styled.ul`
 export const ItemContainer = styled.li`
   margin-top: 0.8rem;
   width: 100%;
-  padding: 0.5rem 0.35rem;
   border-radius: 0.5rem;
   cursor: pointer;
   &:hover {
@@ -83,7 +84,8 @@ export const ItemName = styled.span<{ $displaySidebar: boolean }>`
 `;
 // Sidebar Container
 export const SidebarContainer = styled.div`
-  position: absolute;
+  position: fixed;
+  top: 0;
   left: 0;
   width: '10rem';
   height: 100vh;
@@ -91,6 +93,7 @@ export const SidebarContainer = styled.div`
   //  background: rgba(117, 117, 117, 0.06);
   // border-right: 1px solid #d4d8dd;
   overflow-x: hidden;
+  overflow-y: hidden;
   box-shadow: 7px 0px 15px 0px rgb(0 0 0 / 15%);
   ${ItemWrapper} {
     justify-content: left;

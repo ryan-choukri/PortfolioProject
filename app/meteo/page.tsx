@@ -195,8 +195,10 @@ const WheatherPage = () => {
   console.log('weatherData', weatherData);
 
   return (
-    <div className="h-[80svh] max-h-[800px] max-w-[800px]">
-      <DomeGallery allCities={weatherData} />
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-[80svh] max-h-[600px] w-full max-w-[600px] items-center justify-center">
+        <DomeGallery allCities={weatherData} />
+      </div>
     </div>
   );
 };

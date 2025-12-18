@@ -1,7 +1,7 @@
 'use client';
 // src/components/Sidebar/SidebarItems.jsx
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { ItemsList, ItemContainer, ItemWrapper, ItemName } from './SidebarStyles';
 import { dummyData } from '..';
@@ -11,24 +11,26 @@ interface SidebarItemsProps {
 }
 
 const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
+  const router = useRouter();
   const [activeItem, setActiveItem] = useState(0);
   return (
     <ItemsList>
       {dummyData.map((itemData, index) => (
         <ItemContainer
           key={index}
-          onClick={() => setActiveItem(itemData.id)}
+          onClick={() => {
+            setActiveItem(itemData.id);
+            router.push(itemData.path);
+          }}
           /* Adding active class when the user clicks */
           className={
             'text-sm font-semibold text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')
           }
         >
-          <Link href={itemData.path}>
-            <ItemWrapper>
-              {itemData.icon}
-              <ItemName $displaySidebar={displaySidebar}>{itemData.name}</ItemName>
-            </ItemWrapper>
-          </Link>
+          <ItemWrapper style={{ padding: '0.5rem 0.35rem' }}>
+            {itemData.icon}
+            <ItemName $displaySidebar={displaySidebar}>{itemData.name}</ItemName>
+          </ItemWrapper>
         </ItemContainer>
       ))}
     </ItemsList>

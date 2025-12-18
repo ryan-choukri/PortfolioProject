@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
 import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useGesture } from '@use-gesture/react';
 import Image from 'next/image';
@@ -77,16 +78,16 @@ const DEFAULTS = {
 };
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
-const normalizeAngle = (d: number) => ((d % 360) + 360) % 360;
+// const normalizeAngle = (d: number) => ((d % 360) + 360) % 360;
 const wrapAngleSigned = (deg: number) => {
   const a = (((deg + 180) % 360) + 360) % 360;
   return a - 180;
 };
-const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
-  const attr = el.dataset[name] ?? el.getAttribute(`data-${name}`);
-  const n = attr == null ? NaN : parseFloat(attr);
-  return Number.isFinite(n) ? n : fallback;
-};
+// const getDataNumber = (el: HTMLElement, name: string, fallback: number) => {
+//   const attr = el.dataset[name] ?? el.getAttribute(`data-${name}`);
+//   const n = attr == null ? NaN : parseFloat(attr);
+//   return Number.isFinite(n) ? n : fallback;
+// };
 
 /* Crée les "tiles" de la sphère et les positionne selon un pattern x/y. 
   Les images sont normalisées et réorganisées pour éviter doublons consécutifs. */
@@ -147,18 +148,18 @@ function buildItems(pool: CityAndWheather[], seg: number): ItemDef[] {
 }
 
 /* Calcul la rotation de base de chaque tile selon sa position sur la sphère */
-function computeItemBaseRotation(
-  offsetX: number,
-  offsetY: number,
-  sizeX: number,
-  sizeY: number,
-  segments: number
-) {
-  const unit = 360 / segments / 2;
-  const rotateY = unit * (offsetX + (sizeX - 1) / 2);
-  const rotateX = unit * (offsetY - (sizeY - 1) / 2);
-  return { rotateX, rotateY };
-}
+// function computeItemBaseRotation(
+//   offsetX: number,
+//   offsetY: number,
+//   sizeX: number,
+//   sizeY: number,
+//   segments: number
+// ) {
+//   const unit = 360 / segments / 2;
+//   const rotateY = unit * (offsetX + (sizeX - 1) / 2);
+//   const rotateX = unit * (offsetY - (sizeY - 1) / 2);
+//   return { rotateX, rotateY };
+// }
 
 export default function DomeGallery({
   allCities = [
@@ -204,10 +205,15 @@ export default function DomeGallery({
     width: number;
     height: number;
   } | null>(null);
+  const closingDataRef = useRef<{
+    el: HTMLElement;
+    original: DOMRect;
+  } | null>(null);
 
   console.log('----------allCities----------');
   console.log(allCities);
   const [overlay, setOverlay] = useState<OverlayState | null>(null);
+  const [hiddenTileId, setHiddenTileId] = useState<string | null>(null);
   const rotationRef = useRef({ x: 0, y: 0 });
   const startRotRef = useRef({ x: 0, y: 0 });
   const startPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -222,11 +228,13 @@ export default function DomeGallery({
   const scrollLockedRef = useRef(false);
   const lockScroll = useCallback(() => {
     if (scrollLockedRef.current) return;
+    if (typeof document === 'undefined') return;
     scrollLockedRef.current = true;
     document.body.classList.add('dg-scroll-lock');
   }, []);
   const unlockScroll = useCallback(() => {
     if (!scrollLockedRef.current) return;
+    if (typeof document === 'undefined') return;
     if (rootRef.current?.getAttribute('data-enlarging') === 'true') return;
     scrollLockedRef.current = false;
     document.body.classList.remove('dg-scroll-lock');
@@ -510,7 +518,7 @@ export default function DomeGallery({
           height: frameRef.current!.getBoundingClientRect().height,
           opacity: 0,
           transition: 'transform 300ms ease, opacity 300ms ease',
-          transformOrigin: 'top left',
+          transformOrigin: 'center',
           zIndex: 30,
         }}
       >
@@ -616,14 +624,27 @@ export default function DomeGallery({
       console.log(parent.dataset);
 
       const tileRect = el.getBoundingClientRect();
+      closingDataRef.current = {
+        el,
+        original: tileRect,
+      };
+
+      // Générer un ID unique pour cette tuile
+      const tileId = `${parent.dataset.offsetX}-${parent.dataset.offsetY}`;
+      setHiddenTileId(tileId);
+      focusedElRef.current = el;
+      originalTilePositionRef.current = {
+        left: tileRect.left,
+        top: tileRect.top,
+        width: tileRect.width,
+        height: tileRect.height,
+      };
 
       setOverlay({
         name,
         src,
         from: tileRect,
       });
-
-      el.style.visibility = 'hidden';
     },
     [lockScroll]
   );
@@ -635,6 +656,7 @@ export default function DomeGallery({
       if (movedRef.current) return;
       if (performance.now() - lastDragEndAt.current < 80) return;
       if (openingRef.current) return;
+      if (focusedElRef.current) return;
       openItemFromElement(e.currentTarget);
     },
     [openItemFromElement]
@@ -647,163 +669,296 @@ export default function DomeGallery({
       if (movedRef.current) return;
       if (performance.now() - lastDragEndAt.current < 80) return;
       if (openingRef.current) return;
+      if (focusedElRef.current) return;
       openItemFromElement(e.currentTarget);
     },
     [openItemFromElement]
   );
 
+  const closeOverlay = useCallback(() => {
+    if (!overlay || !closingDataRef.current) return;
+    const overlayEl = viewerRef.current?.querySelector('.enlarge') as HTMLElement | null;
+    if (!overlay || !overlayEl) return;
+
+    overlayEl.style.transition = `all 300ms ease`;
+    requestAnimationFrame(() => {
+      overlayEl.style.opacity = '0';
+      overlayEl.style.transform = 'scale(0.4)';
+    });
+
+    const { el, original } = closingDataRef.current;
+
+    // 1️⃣ Désactiver l’état visuel global
+    rootRef.current?.removeAttribute('data-enlarging');
+
+    // 2️⃣ Retirer l’overlay React immédiatement
+    // on garde la tuile originale visible, donc pas de modification de visibilité ici
+
+    // 3️⃣ Créer le clone animé
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+
+    // const clone = el.cloneNode(true) as HTMLElement;
+    // const rootRect = rootRef.current!.getBoundingClientRect();
+
+    // Object.assign(clone.style, {
+    //   position: 'absolute',
+    //   left: `${original.left - rootRect.left}px`,
+    //   top: `${original.top - rootRect.top}px`,
+    //   width: `${original.width}px`,
+    //   height: `${original.height}px`,
+    //   zIndex: 9999,
+    //   transition: `transform ${enlargeTransitionMs}ms ease, opacity ${enlargeTransitionMs}ms ease`,
+    //   pointerEvents: 'none',
+    //   transformOrigin: 'center center',
+    //   opacity: '1',
+    //   transform: 'scale(1)',
+    // });
+
+    // viewer.appendChild(clone);
+
+    // 4️⃣ Forcer le layout
+    // void clone.getBoundingClientRect();
+
+    // 5️⃣ Animer vers la tuile d’origine
+    // clone.style.transition = `all 50ms ease`;
+
+    // requestAnimationFrame(() => {
+    //   clone.style.opacity = '0';
+    //   clone.style.transform = 'scale(0.2)';
+    // });
+
+    // 6️⃣ Cleanup FINAL (unique)
+    const done = () => {
+      setOverlay(null);
+
+      // clone.remove();
+      closingDataRef.current = null;
+      setHiddenTileId(null);
+      focusedElRef.current = null;
+      openingRef.current = false;
+      draggingRef.current = false; // réactiver le drag
+      unlockScroll();
+    };
+
+    overlayEl.addEventListener('transitionend', done, { once: true });
+    setTimeout(done, enlargeTransitionMs + 50);
+  }, [overlay, enlargeTransitionMs, unlockScroll]);
+
   // Gestion de la fermeture de la frame
-  useEffect(() => {
-    const scrim = scrimRef.current;
-    if (!scrim) return;
+  // useEffect(() => {
+  //   const scrim = scrimRef.current;
+  //   if (!scrim) return;
 
-    const close = () => {
-      console.log('PASSAGE DANS CLOSE');
-      console.log(performance.now(), openStartedAtRef.current, openStartedAtRef.current < 250);
+  //   const close = () => {
+  //     console.log('PASSAGE DANS CLOSE');
+  //     console.log(performance.now(), openStartedAtRef.current, openStartedAtRef.current < 250);
 
-      if (performance.now() - openStartedAtRef.current < 250) return;
+  //     if (performance.now() - openStartedAtRef.current < 250) return;
 
-      const el = focusedElRef.current;
-      console.log('2 PASSAGE DANS CLOSE');
+  //     const el = focusedElRef.current;
+  //     console.log('2 PASSAGE DANS CLOSE');
 
-      if (!el) return;
-      console.log('2 PASSAGE DANS CLOSE');
+  //     if (!el || !el.isConnected) {
+  //       // Élément n'existe plus, nettoyer complètement
+  //       focusedElRef.current = null;
+  //       openingRef.current = false;
+  //       originalTilePositionRef.current = null;
+  //       setHiddenTileId(null);
+  //       rootRef.current?.removeAttribute('data-enlarging');
+  //       unlockScroll();
 
-      const parent = el.parentElement as HTMLElement;
-      const overlay = viewerRef.current?.querySelector('.enlarge') as HTMLElement | null;
-      if (!overlay) return;
-      console.log('3 PASSAGE DANS CLOSE');
+  //       // Nettoyer l'overlay s'il existe
+  //       const overlay = viewerRef.current?.querySelector('.enlarge') as HTMLElement | null;
+  //       if (overlay && overlay.parentElement) {
+  //         overlay.remove();
+  //       }
+  //       return;
+  //     }
 
-      const refDiv = parent.querySelector('.item__image--reference') as HTMLElement | null;
+  //     const parent = el.parentElement as HTMLElement;
+  //     const overlay = viewerRef.current?.querySelector('.enlarge') as HTMLElement | null;
+  //     if (!overlay || !overlay.parentElement) {
+  //       focusedElRef.current = null;
+  //       openingRef.current = false;
+  //       originalTilePositionRef.current = null;
+  //       setHiddenTileId(null);
+  //       rootRef.current?.removeAttribute('data-enlarging');
+  //       unlockScroll();
+  //       return;
+  //     }
+  //     console.log('3 PASSAGE DANS CLOSE');
 
-      const originalPos = originalTilePositionRef.current;
-      console.log('4 PASSAGE DANS CLOSE');
+  //     const refDiv = parent
+  //       ? (parent.querySelector('.item__image--reference') as HTMLElement | null)
+  //       : null;
 
-      if (!originalPos) {
-        overlay.remove();
-        if (refDiv) refDiv.remove();
-        parent.style.setProperty('--rot-y-delta', `0deg`);
-        parent.style.setProperty('--rot-x-delta', `0deg`);
-        el.style.visibility = '';
-        (el.style as any).zIndex = 0;
-        focusedElRef.current = null;
-        rootRef.current?.removeAttribute('data-enlarging');
-        openingRef.current = false;
-        unlockScroll();
-        return;
-      }
+  //     const originalPos = originalTilePositionRef.current;
+  //     console.log('4 PASSAGE DANS CLOSE');
 
-      const currentRect = overlay.getBoundingClientRect();
-      const rootRect = rootRef.current!.getBoundingClientRect();
+  //     if (!originalPos) {
+  //       if (overlay.parentElement) overlay.remove();
+  //       if (refDiv && refDiv.parentElement) refDiv.remove();
+  //       if (parent && parent.isConnected) {
+  //         parent.style.setProperty('--rot-y-delta', `0deg`);
+  //         parent.style.setProperty('--rot-x-delta', `0deg`);
+  //       }
+  //       if (el && el.isConnected) {
+  //         el.style.visibility = '';
+  //         (el.style as any).zIndex = 0;
+  //       }
+  //       focusedElRef.current = null;
+  //       rootRef.current?.removeAttribute('data-enlarging');
+  //       openingRef.current = false;
+  //       unlockScroll();
+  //       return;
+  //     }
 
-      const originalPosRelativeToRoot = {
-        left: originalPos.left - rootRect.left,
-        top: originalPos.top - rootRect.top,
-        width: originalPos.width,
-        height: originalPos.height,
-      };
+  //     const currentRect = overlay.getBoundingClientRect();
+  //     const rootRect = rootRef.current!.getBoundingClientRect();
 
-      const overlayRelativeToRoot = {
-        left: currentRect.left - rootRect.left,
-        top: currentRect.top - rootRect.top,
-        width: currentRect.width,
-        height: currentRect.height,
-      };
+  //     const originalPosRelativeToRoot = {
+  //       left: originalPos.left - rootRect.left,
+  //       top: originalPos.top - rootRect.top,
+  //       width: originalPos.width,
+  //       height: originalPos.height,
+  //     };
 
-      const animatingOverlay = document.createElement('div');
-      animatingOverlay.className = 'enlarge-closing';
-      animatingOverlay.style.cssText = `
-        position: absolute;
-        left: ${overlayRelativeToRoot.left}px;
-        top: ${overlayRelativeToRoot.top}px;
-        width: ${overlayRelativeToRoot.width}px;
-        height: ${overlayRelativeToRoot.height}px;
-        z-index: 9999;
-        border-radius: var(--enlarge-radius, 32px);
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,.35);
-        transition: all ${enlargeTransitionMs}ms ease-out;
-        pointer-events: none;
-        margin: 0;
-        transform: none;
-      `;
+  //     const overlayRelativeToRoot = {
+  //       left: currentRect.left - rootRect.left,
+  //       top: currentRect.top - rootRect.top,
+  //       width: currentRect.width,
+  //       height: currentRect.height,
+  //     };
 
-      const originalImg = overlay.querySelector('img');
-      if (originalImg) {
-        const img = originalImg.cloneNode() as HTMLImageElement;
-        img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
-        animatingOverlay.appendChild(img);
-      }
+  //     const animatingOverlay = document.createElement('div');
+  //     animatingOverlay.className = 'enlarge-closing';
+  //     animatingOverlay.style.cssText = `
+  //       position: absolute;
+  //       left: ${overlayRelativeToRoot.left}px;
+  //       top: ${overlayRelativeToRoot.top}px;
+  //       width: ${overlayRelativeToRoot.width}px;
+  //       height: ${overlayRelativeToRoot.height}px;
+  //       z-index: 9999;
+  //       border-radius: var(--enlarge-radius, 32px);
+  //       overflow: hidden;
+  //       box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  //       transition: all ${enlargeTransitionMs}ms ease-out;
+  //       pointer-events: none;
+  //       margin: 0;
+  //       transform: none;
+  //     `;
 
-      overlay.remove();
-      rootRef.current!.appendChild(animatingOverlay);
+  //     const originalImg = overlay.querySelector('img');
+  //     if (originalImg) {
+  //       const img = originalImg.cloneNode() as HTMLImageElement;
+  //       img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+  //       animatingOverlay.appendChild(img);
+  //     }
 
-      void animatingOverlay.getBoundingClientRect();
+  //     if (overlay.parentElement) overlay.remove();
+  //     if (rootRef.current) rootRef.current.appendChild(animatingOverlay);
 
-      requestAnimationFrame(() => {
-        animatingOverlay.style.left = originalPosRelativeToRoot.left + 'px';
-        animatingOverlay.style.top = originalPosRelativeToRoot.top + 'px';
-        animatingOverlay.style.width = originalPosRelativeToRoot.width + 'px';
-        animatingOverlay.style.height = originalPosRelativeToRoot.height + 'px';
-        animatingOverlay.style.opacity = '0';
-      });
+  //     void animatingOverlay.getBoundingClientRect();
 
-      const cleanup = () => {
-        animatingOverlay.remove();
-        originalTilePositionRef.current = null;
+  //     requestAnimationFrame(() => {
+  //       animatingOverlay.style.left = originalPosRelativeToRoot.left + 'px';
+  //       animatingOverlay.style.top = originalPosRelativeToRoot.top + 'px';
+  //       animatingOverlay.style.width = originalPosRelativeToRoot.width + 'px';
+  //       animatingOverlay.style.height = originalPosRelativeToRoot.height + 'px';
+  //       animatingOverlay.style.opacity = '0';
+  //     });
 
-        if (refDiv) refDiv.remove();
-        parent.style.transition = 'none';
-        el.style.transition = 'none';
+  //     const cleanup = () => {
+  //       if (animatingOverlay.parentElement) animatingOverlay.remove();
+  //       originalTilePositionRef.current = null;
+  //       setHiddenTileId(null);
 
-        parent.style.setProperty('--rot-y-delta', `0deg`);
-        parent.style.setProperty('--rot-x-delta', `0deg`);
+  //       if (refDiv && refDiv.parentElement) refDiv.remove();
 
-        requestAnimationFrame(() => {
-          el.style.visibility = '';
-          el.style.opacity = '0';
-          (el.style as any).zIndex = 0;
-          focusedElRef.current = null;
-          rootRef.current?.removeAttribute('data-enlarging');
+  //       // Vérifier que les éléments existent avant manipulation
+  //       if (parent && parent.isConnected) {
+  //         parent.style.transition = 'none';
+  //         parent.style.setProperty('--rot-y-delta', `0deg`);
+  //         parent.style.setProperty('--rot-x-delta', `0deg`);
+  //       }
 
-          requestAnimationFrame(() => {
-            parent.style.transition = '';
-            el.style.transition = 'opacity 300ms ease-out';
+  //       if (el && el.isConnected) {
+  //         el.style.transition = 'none';
+  //         requestAnimationFrame(() => {
+  //           if (el && el.isConnected) {
+  //             el.style.opacity = '0';
+  //             (el.style as any).zIndex = 0;
 
-            requestAnimationFrame(() => {
-              el.style.opacity = '1';
-              setTimeout(() => {
-                el.style.transition = '';
-                el.style.opacity = '';
-                openingRef.current = false;
-                if (
-                  !draggingRef.current &&
-                  rootRef.current?.getAttribute('data-enlarging') !== 'true'
-                ) {
-                  document.body.classList.remove('dg-scroll-lock');
-                }
-              }, 300);
-            });
-          });
-        });
-      };
+  //             requestAnimationFrame(() => {
+  //               if (el && el.isConnected) {
+  //                 if (parent && parent.isConnected) {
+  //                   parent.style.transition = '';
+  //                 }
+  //                 el.style.transition = 'opacity 300ms ease-out';
 
-      animatingOverlay.addEventListener('transitionend', cleanup, {
-        once: true,
-      });
-    };
+  //                 requestAnimationFrame(() => {
+  //                   if (el && el.isConnected) {
+  //                     el.style.opacity = '1';
+  //                     setTimeout(() => {
+  //                       if (el && el.isConnected) {
+  //                         el.style.transition = '';
+  //                         el.style.opacity = '';
+  //                       }
+  //                       focusedElRef.current = null;
+  //                       openingRef.current = false;
+  //                       rootRef.current?.removeAttribute('data-enlarging');
+  //                       if (
+  //                         !draggingRef.current &&
+  //                         rootRef.current?.getAttribute('data-enlarging') !== 'true'
+  //                       ) {
+  //                         document.body.classList.remove('dg-scroll-lock');
+  //                       }
+  //                     }, 300);
+  //                   } else {
+  //                     focusedElRef.current = null;
+  //                     openingRef.current = false;
+  //                     rootRef.current?.removeAttribute('data-enlarging');
+  //                   }
+  //                 });
+  //               } else {
+  //                 focusedElRef.current = null;
+  //                 openingRef.current = false;
+  //                 rootRef.current?.removeAttribute('data-enlarging');
+  //               }
+  //             });
+  //           } else {
+  //             focusedElRef.current = null;
+  //             openingRef.current = false;
+  //             rootRef.current?.removeAttribute('data-enlarging');
+  //             unlockScroll();
+  //           }
+  //         });
+  //       } else {
+  //         // L'élément n'existe plus, nettoyer immédiatement
+  //         focusedElRef.current = null;
+  //         openingRef.current = false;
+  //         rootRef.current?.removeAttribute('data-enlarging');
+  //         unlockScroll();
+  //       }
+  //     };
 
-    scrim.addEventListener('click', close);
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close();
-    };
-    window.addEventListener('keydown', onKey);
+  //     animatingOverlay.addEventListener('transitionend', cleanup, {
+  //       once: true,
+  //     });
+  //   };
 
-    return () => {
-      scrim.removeEventListener('click', close);
-      window.removeEventListener('keydown', onKey);
-    };
-  }, [enlargeTransitionMs, unlockScroll]);
+  //   // scrim.addEventListener('click', close);
+  //   // const onKey = (e: KeyboardEvent) => {
+  //   //   if (e.key === 'Escape') close();
+  //   // };
+  //   // window.addEventListener('keydown', onKey);
+
+  //   return () => {
+  //     //scrim.removeEventListener('click', close);
+  //     //window.removeEventListener('keydown', onKey);
+  //   };
+  // }, [enlargeTransitionMs, unlockScroll]);
 
   useEffect(() => {
     return () => {
@@ -870,6 +1025,7 @@ export default function DomeGallery({
                   aria-label={it.name || 'Open image'}
                   onClick={onTileClick}
                   onPointerUp={onTilePointerUp}
+                  style={hiddenTileId === `${it.x}-${it.y}` ? { visibility: 'hidden' } : undefined}
                 >
                   {it.src ? (
                     <Image
@@ -892,7 +1048,7 @@ export default function DomeGallery({
         <div className="edge-fade edge-fade--bottom" />
 
         <div className="viewer" ref={viewerRef}>
-          <div ref={scrimRef} className="scrim" />
+          <div ref={scrimRef} className="scrim" onClick={closeOverlay} />
           <div ref={frameRef} className="frame" />
           {overlay && frameRef.current && mainRef.current && (
             <Overlay

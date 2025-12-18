@@ -120,6 +120,7 @@ main.sphere-main {
 }
 
 .item__image {
+  box-shadow: 0px 0px 4px rgba(38, 38, 38, 0.4);
   position: absolute;
   inset: clamp(4px, 1.2vmin, 10px);
   border-radius: var(--tile-radius, 16px);
@@ -195,7 +196,7 @@ main.sphere-main {
   z-index: 30;
   border-radius: var(--enlarge-radius, 32px);
   overflow: hidden;
-  transform-origin: top left;
+  transform-origin: center;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
 }
 
