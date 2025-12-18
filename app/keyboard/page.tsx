@@ -99,7 +99,7 @@ const KeyboardGame = () => {
       )}
 
       {gameEnding && (
-        <div className="pointer-events-auto absolute inset-0 z-10 flex flex-col items-center justify-center">
+        <div className="pointer-events-auto absolute inset-0 z-10 mt-50 flex flex-col items-center">
           <div
             style={{ padding: '30px' }}
             className="flex flex-col items-center justify-center rounded-xl bg-black/50 p-12"

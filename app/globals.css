@@ -241,3 +241,7 @@ body {
   font-weight: 600;
   color: #ffffff;
 }
+
+.sidebar-separator {
+  color: #4a6592;
+}

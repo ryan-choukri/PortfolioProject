@@ -150,6 +150,12 @@ main.sphere-main {
 /* ================================
    VIEWER / ENLARGE
 ================================ */
+@media (max-width: 640px) {
+  .viewer {
+    padding: var(--viewer-pad);
+  }
+}
+
 .viewer {
   position: absolute;
   inset: 0;
@@ -158,7 +164,7 @@ main.sphere-main {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--viewer-pad);
+  padding: 0;
 }
 
 .viewer .frame {

@@ -16,22 +16,30 @@ const SidebarItems = ({ displaySidebar }: SidebarItemsProps) => {
   return (
     <ItemsList>
       {dummyData.map((itemData, index) => (
-        <ItemContainer
-          key={index}
-          onClick={() => {
-            setActiveItem(itemData.id);
-            router.push(itemData.path);
-          }}
-          /* Adding active class when the user clicks */
-          className={
-            'text-sm font-semibold text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')
-          }
-        >
-          <ItemWrapper style={{ padding: '0.5rem 0.35rem' }}>
-            {itemData.icon}
-            <ItemName $displaySidebar={displaySidebar}>{itemData.name}</ItemName>
-          </ItemWrapper>
-        </ItemContainer>
+        <>
+          {index === 1 ? (
+            <>
+              <hr className="sidebar-separator" />
+              <p className="pt-1 text-center text-xs font-semibold text-gray-300">Mes Projets</p>
+            </>
+          ) : null}
+          <ItemContainer
+            key={index}
+            onClick={() => {
+              setActiveItem(itemData.id);
+              router.push(itemData.path);
+            }}
+            /* Adding active class when the user clicks */
+            className={
+              'text-sm font-semibold text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')
+            }
+          >
+            <ItemWrapper style={{ padding: '0.5rem 0.35rem' }}>
+              {itemData.icon}
+              <ItemName $displaySidebar={displaySidebar}>{itemData.name}</ItemName>
+            </ItemWrapper>
+          </ItemContainer>
+        </>
       ))}
     </ItemsList>
   );

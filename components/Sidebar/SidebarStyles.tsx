@@ -57,7 +57,7 @@ export const ItemsList = styled.ul`
   list-style: none;
 `;
 export const ItemContainer = styled.li`
-  margin-top: 0.8rem;
+  margin: 0.4rem 0rem;
   width: 100%;
   border-radius: 0.5rem;
   cursor: pointer;

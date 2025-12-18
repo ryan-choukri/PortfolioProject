@@ -531,7 +531,7 @@ export default function DomeGallery({
               background: 'rgb(37 37 37 / 60%)',
               backdropFilter: 'blur(7px)',
               top: '0px',
-              margin: '34px',
+              margin: '5vw',
               minWidth: '88%',
               position: 'absolute',
               padding: '12px 16px',
@@ -552,6 +552,7 @@ export default function DomeGallery({
             {/* Colonne milieu : température, vent */}
             <div
               style={{
+                paddingLeft: '4%',
                 marginBottom: '8px',
                 display: 'flex',
                 flexDirection: 'column-reverse',
