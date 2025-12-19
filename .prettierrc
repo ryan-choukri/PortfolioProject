@@ -1,5 +1,6 @@
 {
-  "printWidth": 100,
+  "printWidth": 200,
+  "jsxBracketSameLine": true, // met le > de fermeture sur la même ligne
   "tabWidth": 2,
   "useTabs": false,
   "semi": true,
