@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { log } from 'util';
+import SidebarAndData from './SidebarAndData';
+import GridDisplay from './GridDisplay';
 
 type Direction = (typeof DIRECTIONS)[number];
 type Entity = {
@@ -55,6 +56,7 @@ export default function EmojiGame() {
   const [isRunning, setIsRunning] = useState(false);
   const [speedOfGame, setSpeedOfGame] = useState(SPEED_GAME);
   const [natality, setNatality] = useState(NATALITY);
+  const [manageNatality, setManageNatality] = useState(false);
   const [smileySize, setSmileySize] = useState(SMILEY_SIZE);
   const [walkStraight, setWalkStraight] = useState(CHANGE_PROB);
   const [leaveTrace, setLeaveTrace] = useState<Map<string, number[]>[]>([]);
@@ -187,197 +189,27 @@ export default function EmojiGame() {
   }, [isRunning, speedOfGame, natality, walkStraight, mousDisatanceEscape]);
 
   return (
-    <div className="flex w-full items-center justify-center overflow-hidden">
+    <div className="flex w-full items-center justify-center">
       <div className="flex h-screen w-full text-white">
         {/* Sidebar */}
-        <div className="flex w-[590px] flex-col bg-neutral-800 p-4 text-xs text-neutral-200">
-          <div className="grid flex-1 grid-cols-[1.7fr_1.3fr] gap-3">
-            {/* ==== COL 2 : DESCRIPTION + STATS ==== */}
-            <div className="flex flex-col gap-2 pr-1">
-              {/* Description */}
-              <div className="rounded bg-neutral-900 p-3 text-[12px] leading-snug text-neutral-300">
-                <p className="mb-1 text-sm font-semibold text-neutral-100">Règles de la simulation</p>
-                <p>
-                  Chaque smiley se déplace librement sur une grille et interagit lorsqu’il partage la même case qu’un autre. Les rencontres répétées font évoluer son état :
-                  <span className="text-neutral-100"> Touché → En colère → Vieux → Supprimé</span>.
-                </p>
-                <p className="mt-1">Les smileys en colère peuvent générer de nouveaux individus selon le taux de natalité. Le système évolue en continu, guidé par le hasard et les collisions.</p>
-                <p className="mt-2 text-[11px] text-neutral-400">
-                  💡 Logique interne : Chaque smiley garde une trace des rencontres passées (smyleyMeet). Selon le nombre de rencontres répétées, il change d&rsquo;état ou peut générer un nouveau
-                  smiley.
-                </p>
-              </div>
-
-              {/* Live stats */}
-              <h3 className="text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">Live stats</h3>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-1 rounded bg-neutral-700 p-3 font-mono text-xs">
-                <div>Population</div>
-                <div className="text-right">{smileys.length}</div>
-
-                <div>Natalité</div>
-                <div className="text-right">{natality}</div>
-
-                <div>Vitesse simu</div>
-                <div className="text-right">{speedOfGame} ms</div>
-
-                <div>Marche droit</div>
-                <div className="text-right">{walkStraight}</div>
-
-                <div>Nb Naissance</div>
-                <div className="text-right">{nbBorn} </div>
-                <div>Nb Déces</div>
-                <div className="text-right">{nbDead} </div>
-              </div>
-
-              {/* Debug */}
-              {/* <div className="rounded bg-neutral-900 p-2 font-mono text-[11px] text-neutral-400">
-                <p>Collisions: —</p>
-                <p>Births / tick: —</p>
-                <p>Deaths / tick: —</p>
-              </div> */}
-            </div>
-
-            {/* ==== COL 1 : CONTROLS ==== */}
-            <div className="flex flex-col gap-3 pl-1">
-              <h3 className="text-[10px] font-semibold tracking-wide text-neutral-100 uppercase">Controls</h3>
-              {/* Taille des smiley */}
-              <div>
-                <label htmlFor="smiley" className="mb-0.5 block text-xs font-medium font-semibold text-neutral-100">
-                  Taille des smiley {Math.round(smileySize * 100)}%
-                </label>
-                <input onChange={(e) => setSmileySize(Number(e.target.value) / 100)} type="range" id="smiley" min="10" max="40" defaultValue={smileySize * 100} className="w-full accent-green-500" />
-              </div>
-
-              {/* Natalité */}
-              <div>
-                <label htmlFor="natality" className="mb-0.5 block text-xs font-medium font-semibold text-neutral-100">
-                  Taux de Natalité
-                </label>
-                <input onChange={(e) => setNatality(Number(e.target.value) / 100)} type="range" id="natality" min="0" max="100" defaultValue={natality * 100} className="w-full accent-yellow-500" />
-              </div>
-
-              {/* Speed */}
-              <div>
-                <label htmlFor="speed" className="mb-0.5 block text-xs font-medium font-semibold text-neutral-100">
-                  Vitesse de la simulation
-                </label>
-                <input onChange={(e) => setSpeedOfGame(51 - Number(e.target.value))} type="range" id="speed" min="1" max="50" defaultValue={speedOfGame} className="w-full accent-sky-400" />
-              </div>
-
-              {/* Walkt raight */}
-              <div>
-                <label htmlFor="speed" className="mb-0.5 block text-xs font-medium font-semibold text-neutral-100">
-                  Marche droit
-                </label>
-                <input
-                  onChange={(e) => setWalkStraight(Number(e.target.value) / 100)}
-                  type="range"
-                  id="walkStraight"
-                  min="1"
-                  max="50"
-                  defaultValue={walkStraight * 100}
-                  className="w-full accent-pink-400"
-                />
-              </div>
-
-              {/* mousDisatanceEscape, setMousDisatanceEscape */}
-              {/* répulsion de la souris */}
-              <div>
-                <label htmlFor="speed" className="mb-0.5 block text-xs font-medium font-semibold text-neutral-100">
-                  répulsion de la souris
-                </label>
-                <input
-                  onChange={(e) => setMousDisatanceEscape(Number(e.target.value))}
-                  type="range"
-                  id="speed"
-                  min="4"
-                  max="50"
-                  defaultValue={mousDisatanceEscape}
-                  className="w-full accent-blue-500"
-                />
-              </div>
-
-              {/* ACTION */}
-              <button onClick={() => setIsRunning((v) => !v)} className="mt-3 rounded bg-green-500 py-1.5 text-sm font-bold text-black transition hover:bg-green-400">
-                {isRunning ? '⏸ Pause' : '▶️ Play'}
-              </button>
-            </div>
-          </div>
-        </div>
+        <SidebarAndData
+          {...{
+            smileys,
+            natality,
+            manageNatality,
+            speedOfGame,
+            walkStraight,
+            smileySize,
+            mousDisatanceEscape,
+            nbBorn,
+            nbDead,
+            isRunning,
+          }}
+          {...{ setNatality, setManageNatality, setSpeedOfGame, setWalkStraight, setSmileySize, setMousDisatanceEscape, setIsRunning }}
+        />
 
         {/* Zone du cube / jeu */}
-        <div className="flex flex-1 items-center justify-center">
-          <div className="flex h-[600px] w-[600px] items-center justify-center rounded-md">
-            <div
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                mousePosRef.current = {
-                  x: Math.floor((e.clientX - rect.left) / CELL_SIZE),
-                  y: Math.floor((e.clientY - rect.top) / CELL_SIZE),
-                };
-              }}
-              className="relative bg-neutral-900"
-              style={{
-                width: GRID_SIZE * CELL_SIZE,
-                height: GRID_SIZE * CELL_SIZE,
-              }}>
-              {/* grille logique */}
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`,
-                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-                }}
-              />
-              {/* traces leave a subltile trace on the map under the smileys
-              and it disappears over time */}
-              {/* its laggy */}
-              {/* {leaveTrace.map((traceMap, index) => (
-                <div key={index}>
-                  {Array.from(traceMap.entries()).map(([key, ids]) => {
-                    console.log(index, key, ids.length);
-                    const [x, y] = key.split(',').map(Number);
-                    // increase opacity with number of smileys by index
-                    const opacity = Math.min(0.1 + ids.length * 0.1, 0.9) * ((index + 1) / leaveTrace.length);
-                    return (
-                      <div
-                        key={key}
-                        className="absolute flex items-center justify-center select-none"
-                        style={{
-                          width: CELL_SIZE,
-                          height: CELL_SIZE,
-                          transform: `translate(${x * CELL_SIZE}px, ${y * CELL_SIZE}px)`,
-                          fontSize: CELL_SIZE * (smileySize * 10),
-                          lineHeight: '1',
-                          opacity: opacity,
-                        }}>
-                        {ids.length > 1 ? SMILEY_STATES['touched'] : SMILEY_STATES['normal']}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))} */}
-
-              {/* smileys */}
-              {smileys.map((s) => (
-                <div
-                  key={s.id}
-                  className="linear absolute flex items-center justify-center select-none"
-                  style={{
-                    width: CELL_SIZE,
-                    height: CELL_SIZE,
-                    transform: `translate(${s.x * CELL_SIZE}px, ${s.y * CELL_SIZE}px)`,
-                    // left: s.x * CELL_SIZE,
-                    // top: s.y * CELL_SIZE,
-                    fontSize: CELL_SIZE * (smileySize * 10),
-                    lineHeight: '1',
-                  }}>
-                  {s.state in SMILEY_STATES ? SMILEY_STATES[s.state] : SMILEY_STATES['normal']}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <GridDisplay /* props ici */ smileys={smileys} smileySize={smileySize} mousePosRef={mousePosRef} />
       </div>
     </div>
   );
