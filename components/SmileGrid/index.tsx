@@ -2,9 +2,11 @@
 import { useState, useEffect, useRef } from 'react';
 import SidebarAndData from './SidebarAndData';
 import GridDisplay from './GridDisplay';
+import NAMESOFSMILEYS from './NamesOfSmiley.json';
 
 type Direction = (typeof DIRECTIONS)[number];
 type Entity = {
+  name: string;
   id: number;
   x: number;
   y: number;
@@ -39,6 +41,7 @@ const MOVE_MAP: Record<Direction, { dx: number; dy: number }> = {
 
 const makeSmiley = (x: number, y: number, id: number, state: string = 'normal'): Entity => ({
   //make baby born from two parents positioned at the same place
+  name: NAMESOFSMILEYS[id] ? NAMESOFSMILEYS[id] : NAMESOFSMILEYS[id % NAMESOFSMILEYS.length],
   id,
   x,
   y,
@@ -63,7 +66,7 @@ export default function EmojiGame() {
   const [nbBorn, setNbBorn] = useState(0);
   const [nbDead, setNbDead] = useState(0);
   const [mousDisatanceEscape, setMousDisatanceEscape] = useState(10);
-
+  const [mouseOnGrid, setMouseOnGrid] = useState(false);
   // const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: -1, y: -1 });
   const mousePosRef = useRef<{ x: number; y: number }>({ x: -1, y: -1 });
 
@@ -108,7 +111,7 @@ export default function EmojiGame() {
       const distance = Math.sqrt(distX * distX + distY * distY);
       let newDir: Direction = s.dir;
 
-      if (distance < mousEscapeDistance) {
+      if (mouseOnGrid && distance < mousEscapeDistance) {
         // s'éloigner de la souris
         if (Math.abs(distX) > Math.abs(distY)) newDir = distX > 0 ? 'right' : 'left';
         else newDir = distY > 0 ? 'down' : 'up';
@@ -176,17 +179,34 @@ export default function EmojiGame() {
       return { posWithCollision: newPositions, newPos: toAdd };
     };
 
+    const computeNatality = () => {
+      if (!manageNatality) return;
+      // adjust natality to keep a stable population
+      // Stable means between 300 et 800 smileys
+      //but smarter if below 400 increase natality faster and if above 1000 decrease faster
+      //and make step smaller when closer to the target
+      setNatality((prev) => {
+        if (smileys.length < 200) return Math.min(1, prev + 0.05 + (400 - smileys.length) / 1000);
+        if (smileys.length < 600) return Math.min(1, prev + 0.02);
+        if (smileys.length > 1200) return Math.max(0, prev - 0.05 - (smileys.length - 1000) / 1000);
+        if (smileys.length > 900) return Math.max(0, prev - 0.02);
+        return prev;
+      });
+    };
+
     if (!isRunning) return;
     const interval = setInterval(() => {
       setSmileys((prev) => {
         const newPositions = prev.map((entity) => moveSmiley(entity, walkStraight, GRID_SIZE, mousePosRef.current, mousDisatanceEscape));
         const { posWithCollision, newPos } = handleCollisions(newPositions, natality, nextIdRef);
+
+        computeNatality();
         return [...posWithCollision, ...newPos];
       });
     }, speedOfGame);
 
     return () => clearInterval(interval);
-  }, [isRunning, speedOfGame, natality, walkStraight, mousDisatanceEscape]);
+  }, [isRunning, speedOfGame, natality, walkStraight, mousDisatanceEscape, mouseOnGrid, manageNatality, smileys.length]);
 
   return (
     <div className="flex w-full items-center justify-center">
@@ -208,8 +228,18 @@ export default function EmojiGame() {
           {...{ setNatality, setManageNatality, setSpeedOfGame, setWalkStraight, setSmileySize, setMousDisatanceEscape, setIsRunning }}
         />
 
+        {/* <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4"> */}
         {/* Zone du cube / jeu */}
-        <GridDisplay /* props ici */ smileys={smileys} smileySize={smileySize} mousePosRef={mousePosRef} />
+        <GridDisplay
+          smileys={smileys}
+          smileySize={smileySize}
+          mousePosRef={mousePosRef}
+          mouseOnGrid={mouseOnGrid}
+          setMouseOnGrid={setMouseOnGrid}
+          natality={natality}
+          nbBorn={nbBorn}
+          nbDead={nbDead}
+        />
       </div>
     </div>
   );

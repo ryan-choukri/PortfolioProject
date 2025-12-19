@@ -138,6 +138,7 @@ const SidebarAndData = ({
           </label>
           <input
             disabled={manageNatality}
+            value={natality * 100}
             onChange={(e) => setNatality(Number(e.target.value) / 100)}
             type="range"
             id="natality"
