@@ -28,7 +28,9 @@ const SidebarAndData = ({
   setSmileySize,
   setMousDisatanceEscape,
   isRunning,
+  launchBomb,
   setIsRunning,
+  setLaunchBomb,
 }: {
   smileys: Entity[];
   natality: number;
@@ -46,7 +48,9 @@ const SidebarAndData = ({
   setSmileySize: (size: number) => void;
   setMousDisatanceEscape: (distance: number) => void;
   isRunning: boolean;
+  launchBomb: boolean;
   setIsRunning: (isRunning: boolean) => void;
+  setLaunchBomb: (launch: boolean) => void;
 }) => (
   <div className="hidden w-[590px] flex-col bg-neutral-800 p-4 text-xs text-neutral-200 md:flex">
     <div className="grid flex-1 grid-cols-[1.7fr_1.3fr] gap-3">
@@ -144,7 +148,6 @@ const SidebarAndData = ({
             id="natality"
             min="0"
             max="100"
-            defaultValue={natality * 100}
             className="w-full accent-yellow-500"
           />
         </div>
@@ -176,6 +179,11 @@ const SidebarAndData = ({
           </label>
           <input onChange={(e) => setMousDisatanceEscape(Number(e.target.value))} type="range" id="speed" min="4" max="50" defaultValue={mousDisatanceEscape} className="w-full accent-blue-500" />
         </div>
+        <button
+          onClick={() => setLaunchBomb(!launchBomb)}
+          className={(!launchBomb ? 'bg-red-400 hover:bg-red-600' : 'bg-green-400 hover:bg-green-600') + ' mt-3 rounded py-1.5 text-sm font-bold text-black transition'}>
+          Drop Bomb
+        </button>
 
         {/* ACTION */}
         <button onClick={() => setIsRunning(!isRunning)} className="mt-3 rounded bg-green-500 py-1.5 text-sm font-bold text-black transition hover:bg-green-400">

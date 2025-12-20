@@ -14,22 +14,27 @@ type Entity = {
   state: string;
   smyleyMeet: number[];
 };
+const MAX_POPULATION = 1500;
+const NATALITY_TARGET_LOW = 200;
+const NATALITY_TARGET_BEETWEEN_LOW = 600;
+const NATALITY_TARGET_BEETWEEN_HIGH = 900;
+const NATALITY_TARGET_HIGH = 1200;
 
 const GRID_SIZE = 100; // taille de la grille en nombre de cellules
-const CELL_SIZE = 6; // taille d'une cellule en pixels
+// const CELL_SIZE = 6; // taille d'une cellule en pixels
 const NUM_SMILEYS = 20; // nombre initial de smileys
 const SPEED_GAME = 24; // nombre en ms entre chaque déplacement
 const NATALITY = 0.3; // taux de natalité
 const SMILEY_SIZE = 0.2; // taille des smileys
 const DIRECTIONS = ['up', 'down', 'left', 'right'] as const;
-const SMILEY_STATES: Record<string, string> = {
-  normal: '🙂',
-  touched: '😤',
-  thirsty: '😥',
-  makeKid: '👹',
-  old: '🥶',
-  young: '🤡',
-};
+// const SMILEY_STATES: Record<string, string> = {
+//   normal: '🙂',
+//   touched: '😤',
+//   thirsty: '😥',
+//   makeKid: '👹',
+//   old: '🥶',
+//   young: '🤡',
+// };
 
 const CHANGE_PROB = 0.2; // 10% de chance de changer de direction
 const MOVE_MAP: Record<Direction, { dx: number; dy: number }> = {
@@ -60,6 +65,8 @@ export default function EmojiGame() {
   const [speedOfGame, setSpeedOfGame] = useState(SPEED_GAME);
   const [natality, setNatality] = useState(NATALITY);
   const [manageNatality, setManageNatality] = useState(false);
+  const [launchBomb, setLaunchBomb] = useState(false);
+  const [bombAtPosition, setBombatPosition] = useState<{ x: number; y: number } | null>(null);
   const [smileySize, setSmileySize] = useState(SMILEY_SIZE);
   const [walkStraight, setWalkStraight] = useState(CHANGE_PROB);
   const [leaveTrace, setLeaveTrace] = useState<Map<string, number[]>[]>([]);
@@ -104,14 +111,25 @@ export default function EmojiGame() {
 
   // ✅ Real-time movement + collision detection
   useEffect(() => {
+    const smileyTouchedByBomb = ({ x, y }: { x: number; y: number }) => {
+      if (!bombAtPosition) return false;
+      const diffX = Math.abs(bombAtPosition.x - x);
+      const diffY = Math.abs(bombAtPosition.y - y);
+      // distance de 20 pixels (environ 4 cases) pour être affecté par la bombe mais en distance euclidienne 20 puissance 2 = 400
+      return diffX * diffX + diffY * diffY < 400;
+    };
     const moveSmiley = (s: Entity, walkStraight: number, gridSize: number, mousePos: { x: number; y: number }, mousEscapeDistance: number) => {
       //si le smiley est au bord, il doit forcément changer de direction
       const distX = s.x - mousePos.x;
       const distY = s.y - mousePos.y;
+      if (launchBomb && bombAtPosition) {
+        // if bomb at this position, remove all smileys}
+        if (smileyTouchedByBomb({ x: s.x, y: s.y })) return [];
+      }
       const distance = Math.sqrt(distX * distX + distY * distY);
       let newDir: Direction = s.dir;
 
-      if (mouseOnGrid && distance < mousEscapeDistance) {
+      if (!launchBomb && mouseOnGrid && distance < mousEscapeDistance) {
         // s'éloigner de la souris
         if (Math.abs(distX) > Math.abs(distY)) newDir = distX > 0 ? 'right' : 'left';
         else newDir = distY > 0 ? 'down' : 'up';
@@ -120,18 +138,20 @@ export default function EmojiGame() {
           //prend la direction opposé à celle du bord
           newDir = getSmartDirectionNoBack(s, gridSize);
           const newPos = moveInGrid(s, newDir, gridSize);
-          return { ...s, ...newPos, dir: newDir };
+          return [{ ...s, ...newPos, dir: newDir }];
         }
 
         newDir = Math.random() > walkStraight ? s.dir : getSmartDirectionNoBack(s, gridSize);
       }
       const newPos = moveInGrid(s, newDir, gridSize);
 
-      return { ...s, ...newPos, dir: newDir };
+      return [{ ...s, ...newPos, dir: newDir }];
     };
 
     const handleCollisions = (newPositions: Entity[], natality: number, nextIdRef: React.MutableRefObject<number>): { posWithCollision: Entity[]; newPos: Entity[] } => {
       const positionsMap = new Map<string, number[]>();
+
+      // créer une map des positions avec les ids des smileys lié à cette position
       newPositions.forEach((s, idx) => {
         const key = `${s.x},${s.y}`;
         if (!positionsMap.has(key)) positionsMap.set(key, []);
@@ -147,6 +167,7 @@ export default function EmojiGame() {
       const toAdd: Entity[] = [];
 
       positionsMap.forEach((ids) => {
+        //permet de manager quand plusieurs smileys se rencontrent
         if (ids.length > 1) {
           let birthDone = false;
           ids.forEach((id) => {
@@ -161,7 +182,7 @@ export default function EmojiGame() {
               idsToRemove.push(...hasFour.otherids, newPositions[id].id);
             } else {
               // try to make baby if is not young already
-              if (newPositions.length < 1500 && !birthDone && Math.random() < natality && newPositions[id].state !== 'young') {
+              if (newPositions.length < MAX_POPULATION && !birthDone && Math.random() < natality && newPositions[id].state !== 'young') {
                 toAdd.push(makeSmiley(Math.floor(Math.random() * GRID_SIZE), Math.floor(Math.random() * GRID_SIZE), nextIdRef.current++, 'young'));
                 setNbBorn((n) => n + 1);
                 birthDone = true;
@@ -176,6 +197,7 @@ export default function EmojiGame() {
       });
       // suppression après calcul
       newPositions = newPositions.filter((s) => !idsToRemove.includes(s.id));
+
       return { posWithCollision: newPositions, newPos: toAdd };
     };
 
@@ -186,10 +208,10 @@ export default function EmojiGame() {
       //but smarter if below 400 increase natality faster and if above 1000 decrease faster
       //and make step smaller when closer to the target
       setNatality((prev) => {
-        if (smileys.length < 200) return Math.min(1, prev + 0.05 + (400 - smileys.length) / 1000);
-        if (smileys.length < 600) return Math.min(1, prev + 0.02);
-        if (smileys.length > 1200) return Math.max(0, prev - 0.05 - (smileys.length - 1000) / 1000);
-        if (smileys.length > 900) return Math.max(0, prev - 0.02);
+        if (smileys.length < NATALITY_TARGET_LOW) return Math.min(1, prev + 0.05 + (400 - smileys.length) / 1000);
+        if (smileys.length < NATALITY_TARGET_BEETWEEN_LOW) return Math.min(1, prev + 0.02);
+        if (smileys.length > NATALITY_TARGET_HIGH) return Math.max(0, prev - 0.05 - (smileys.length - 1000) / 1000);
+        if (smileys.length > NATALITY_TARGET_BEETWEEN_HIGH) return Math.max(0, prev - 0.02);
         return prev;
       });
     };
@@ -197,16 +219,17 @@ export default function EmojiGame() {
     if (!isRunning) return;
     const interval = setInterval(() => {
       setSmileys((prev) => {
-        const newPositions = prev.map((entity) => moveSmiley(entity, walkStraight, GRID_SIZE, mousePosRef.current, mousDisatanceEscape));
+        const newPositions = prev.flatMap((entity) => moveSmiley(entity, walkStraight, GRID_SIZE, mousePosRef.current, mousDisatanceEscape));
         const { posWithCollision, newPos } = handleCollisions(newPositions, natality, nextIdRef);
 
+        if (launchBomb && bombAtPosition) setBombatPosition(null);
         computeNatality();
         return [...posWithCollision, ...newPos];
       });
     }, speedOfGame);
 
     return () => clearInterval(interval);
-  }, [isRunning, speedOfGame, natality, walkStraight, mousDisatanceEscape, mouseOnGrid, manageNatality, smileys.length]);
+  }, [isRunning, speedOfGame, natality, walkStraight, mousDisatanceEscape, mouseOnGrid, manageNatality, smileys.length, launchBomb, bombAtPosition]);
 
   return (
     <div className="flex w-full items-center justify-center">
@@ -224,13 +247,15 @@ export default function EmojiGame() {
             nbBorn,
             nbDead,
             isRunning,
+            launchBomb,
           }}
-          {...{ setNatality, setManageNatality, setSpeedOfGame, setWalkStraight, setSmileySize, setMousDisatanceEscape, setIsRunning }}
+          {...{ setNatality, setManageNatality, setSpeedOfGame, setWalkStraight, setSmileySize, setMousDisatanceEscape, setIsRunning, setLaunchBomb }}
         />
 
         {/* <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4"> */}
         {/* Zone du cube / jeu */}
         <GridDisplay
+          setBombatPosition={setBombatPosition}
           smileys={smileys}
           smileySize={smileySize}
           mousePosRef={mousePosRef}
@@ -239,6 +264,7 @@ export default function EmojiGame() {
           natality={natality}
           nbBorn={nbBorn}
           nbDead={nbDead}
+          launchBomb={launchBomb}
         />
       </div>
     </div>

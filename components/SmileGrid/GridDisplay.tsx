@@ -31,6 +31,8 @@ const GridDisplay = ({
   natality,
   nbBorn,
   nbDead,
+  launchBomb,
+  setBombatPosition,
 }: {
   mouseOnGrid: boolean;
   setMouseOnGrid: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,10 +42,20 @@ const GridDisplay = ({
   natality: number;
   nbBorn: number;
   nbDead: number;
+  launchBomb: boolean;
+  setBombatPosition: (pos: { x: number; y: number }) => void;
 }) => (
   <div className="flex flex-1 scale-[0.5] flex-col items-center justify-center sm:scale-100">
     <div className="flex h-[90vw] max-h-[600px] w-[90vw] max-w-[600px] items-center justify-center rounded-md md:h-[600px] md:w-[600px]">
       <div
+        onClick={() => {
+          if (launchBomb) {
+            const pos = mousePosRef.current;
+            console.log(`Clicked on grid at cell (${pos.x}, ${pos.y})`);
+            // déclenche une action de bombe à la position de la souris
+            setBombatPosition({ x: pos.x, y: pos.y });
+          }
+        }}
         onMouseMove={(e) => {
           if (!mouseOnGrid) setMouseOnGrid(true);
 
@@ -133,7 +145,6 @@ const GridDisplay = ({
               },
               {} as Record<string, number>
             );
-            console.log(counts);
             if (nbDead > 0) counts['dead'] = nbDead;
 
             const max = Math.max(...Object.values(counts));
