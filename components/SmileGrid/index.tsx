@@ -14,11 +14,11 @@ type Entity = {
   state: string;
   smyleyMeet: number[];
 };
-const MAX_POPULATION = 1500;
+const MAX_POPULATION = 10500;
 const NATALITY_TARGET_LOW = 200;
 const NATALITY_TARGET_BEETWEEN_LOW = 600;
 const NATALITY_TARGET_BEETWEEN_HIGH = 900;
-const NATALITY_TARGET_HIGH = 1200;
+const NATALITY_TARGET_HIGH = 5000;
 
 const GRID_SIZE = 100; // taille de la grille en nombre de cellules
 // const CELL_SIZE = 6; // taille d'une cellule en pixels
@@ -255,6 +255,7 @@ export default function EmojiGame() {
         {/* <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4"> */}
         {/* Zone du cube / jeu */}
         <GridDisplay
+          bombatPosition={bombAtPosition}
           setBombatPosition={setBombatPosition}
           smileys={smileys}
           smileySize={smileySize}
@@ -265,6 +266,7 @@ export default function EmojiGame() {
           nbBorn={nbBorn}
           nbDead={nbDead}
           launchBomb={launchBomb}
+          leaveTrace={leaveTrace}
         />
       </div>
     </div>
