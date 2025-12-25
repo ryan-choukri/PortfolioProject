@@ -61,32 +61,21 @@ const BpmCounter = () => {
   const style = getStyleFromBPM(displayBpm);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="my-20 flex items-center justify-center">
       <div className="flex w-full max-w-sm flex-col items-center gap-6 rounded-2xl border border-zinc-700 bg-zinc-800 p-6 shadow-xl">
         <div className="text-xs tracking-widest text-zinc-400 uppercase">BPM Counter</div>
         <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-4">
-          <div
-            className={`w-full rounded-lg bg-gradient-to-r py-3 text-center text-sm font-extrabold tracking-widest text-black uppercase transition-all duration-500 ease-in-out ${style.color}`}
-          >
+          <div className={`w-full rounded-lg bg-gradient-to-r py-3 text-center text-sm font-extrabold tracking-widest text-black uppercase transition-all duration-500 ease-in-out ${style.color}`}>
             {style.label}
           </div>
-          <div
-            className={`flex w-full items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 py-8 text-6xl font-extrabold text-white tabular-nums`}
-          >
-            {displayBpm}
-          </div>
+          <div className={`flex w-full items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 py-8 text-6xl font-extrabold text-white tabular-nums`}>{displayBpm}</div>
         </div>
 
-        <button
-          onClick={handleClick}
-          className="h-24 w-full rounded-xl bg-yellow-500 text-2xl font-bold tracking-wide text-white shadow-lg transition-all hover:bg-yellow-600 active:scale-95"
-        >
+        <button onClick={handleClick} className="h-24 w-full rounded-xl bg-yellow-500 text-2xl font-bold tracking-wide text-white shadow-lg transition-all hover:bg-yellow-600 active:scale-95">
           TAP
         </button>
 
-        <div className="text-center text-sm text-zinc-500">
-          Tapote en rythme pour détecter le tempo
-        </div>
+        <div className="text-center text-sm text-zinc-500">Tapote en rythme pour détecter le tempo</div>
       </div>
     </div>
   );

@@ -171,7 +171,7 @@ body {
 
 .sidebar-shadow {
   z-index: 50 !important;
-  background: linear-gradient(48deg, #111a29 0%, #131e36 65%, #1e2939 100% 100%);
+  background: linear-gradient(48deg, #0f1a2e66 0%, #111f3d66 65%, #24223966 100%);
 }
 
 .sidebar-profile {
@@ -254,4 +254,8 @@ body {
 
 .dark {
   --primary: oklch(0.85 0.15 55);
+}
+
+.sidebar-grid   {
+  background-color: oklch(31.714% 0.00004 271.152) !important;
 }

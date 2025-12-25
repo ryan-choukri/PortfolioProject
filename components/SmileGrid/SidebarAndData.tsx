@@ -52,37 +52,38 @@ const SidebarAndData = ({
   setIsRunning: (isRunning: boolean) => void;
   setLaunchBomb: (launch: boolean) => void;
 }) => (
-  <div className="hidden w-[590px] flex-col bg-neutral-800 p-4 text-xs text-neutral-200 md:flex">
+  <div className="sidebar-grid hidden w-[590px] flex-col p-4 text-xs text-neutral-200 md:flex">
     <div className="grid flex-1 grid-cols-[1.7fr_1.3fr] gap-3">
       {/* ==== COL 2 : DESCRIPTION + STATS ==== */}
       <div className="flex flex-col gap-2 pr-1">
         {/* Description */}
-        <div className="rounded bg-neutral-900 p-3 text-[12px] leading-snug text-neutral-300">
+        <div className="max-h-[65vh] rounded bg-neutral-900 p-3 text-[12px] leading-snug text-neutral-300">
           <p className="mb-1 text-sm font-semibold text-neutral-100">Règles de la simulation</p>
+          <div className="max-h-[55vh] overflow-scroll">
+            <p>
+              Les smileys évoluent sur une grille discrète et se déplacent de manière autonome à chaque tick. Leur trajectoire est semi-aléatoire : ils peuvent continuer tout droit ou changer de
+              direction, sans jamais revenir immédiatement en arrière ni sortir de la grille.
+            </p>
 
-          <p>
-            Les smileys évoluent sur une grille discrète et se déplacent de manière autonome à chaque tick. Leur trajectoire est semi-aléatoire : ils peuvent continuer tout droit ou changer de
-            direction, sans jamais revenir immédiatement en arrière ni sortir de la grille.
-          </p>
+            <p className="mt-1">
+              La souris influence le comportement des entités : lorsqu’un smiley se trouve à proximité du curseur, il cherche activement à s’en éloigner, créant une zone de répulsion dynamique.
+            </p>
 
-          <p className="mt-1">
-            La souris influence le comportement des entités : lorsqu’un smiley se trouve à proximité du curseur, il cherche activement à s’en éloigner, créant une zone de répulsion dynamique.
-          </p>
+            <p className="mt-1">
+              Lorsqu’au moins deux smileys occupent la même case, une interaction est enregistrée. Chaque smiley conserve l’historique de ses rencontres, ce qui fait évoluer son état au fil du temps :
+              <span className="text-neutral-100"> Touché → Reproduction → Vieux → Supprimé</span>.
+            </p>
 
-          <p className="mt-1">
-            Lorsqu’au moins deux smileys occupent la même case, une interaction est enregistrée. Chaque smiley conserve l’historique de ses rencontres, ce qui fait évoluer son état au fil du temps :
-            <span className="text-neutral-100"> Touché → Reproduction → Vieux → Supprimé</span>.
-          </p>
+            <p className="mt-1">
+              Les smileys en phase de Reproduction peuvent engendrer de nouveaux individus selon le taux de natalité. À l’inverse, des rencontres répétées excessives conduisent à la disparition des
+              entités concernées.
+            </p>
 
-          <p className="mt-1">
-            Les smileys en phase de Reproduction peuvent engendrer de nouveaux individus selon le taux de natalité. À l’inverse, des rencontres répétées excessives conduisent à la disparition des
-            entités concernées.
-          </p>
-
-          <p className="mt-2 text-[11px] text-neutral-400">
-            💡 Logique interne : chaque smiley mémorise les identifiants des entités rencontrées (smyleyMeet). Le nombre de répétitions déclenche des transitions d’état, des naissances ou des
-            suppressions, permettant à la population d’évoluer de façon émergente.
-          </p>
+            <p className="mt-2 text-[11px] text-neutral-400">
+              💡 Logique interne : chaque smiley mémorise les identifiants des entités rencontrées (smyleyMeet). Le nombre de répétitions déclenche des transitions d’état, des naissances ou des
+              suppressions, permettant à la population d’évoluer de façon émergente.
+            </p>
+          </div>
         </div>
 
         {/* Live stats */}

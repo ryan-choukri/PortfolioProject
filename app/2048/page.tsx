@@ -1,10 +1,11 @@
 'use client';
-import Game2048 from '@/components/Game2048';
 import { useState } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Game2048 from '@/components/Game2048';
 
-export default function Grid2048() {
+import { gameExplainData } from './gameExplainData';
+import { DisplayBlock } from '@/components/ui/DisplayBlock';
+
+export default function Game2048Explanation() {
   const [gameKey, setGameKey] = useState(0);
   const resetGame = () => {
     setGameKey((prev) => prev + 1); // forces Game2048 to remount
@@ -15,106 +16,24 @@ export default function Grid2048() {
       {/* Titre */}
       <h1 className="mb-2 text-center text-4xl font-bold">2048</h1>
       <div className="overflow-hidden rounded-t-lg p-3 text-center">
-        <button
-          onClick={resetGame}
-          className="rounded border border-blue-500 bg-transparent px-4 py-2 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
-        >
-          <p>RELOAD</p>
+        <button onClick={resetGame} className="rounded border border-blue-500 bg-transparent px-4 py-2 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white">
+          <p>Rejouer</p>
         </button>
       </div>
       <Game2048 key={gameKey} />
-      <div className="mx-auto mt-8 grid w-full max-w-4xl grid-cols-1 gap-4 px-2 sm:grid-cols-2 md:grid-cols-3">
-        {[
-          {
-            title: 'Création du composant',
-            desc: "J'ai commencé par créer un petit composant React pour le plateau du jeu 2048. L'idée était de générer un grid simple de 4x4 cases avec des valeurs initiales.",
-            color: 'bg-blue-200',
-          },
-          {
-            title: 'Gestion des déplacements',
-            desc: "Ensuite, j'ai implémenté la logique pour déplacer les tuiles à gauche, droite, haut et bas. J'ai commencé simple, en bougeant les cases et en essayant de fusionner les mêmes valeurs.",
-            color: 'bg-green-200',
-          },
-          {
-            title: 'Ajout des cases aléatoires',
-            desc: "J'ai ajouté la génération de nouvelles cases aléatoires après chaque mouvement pour que le jeu avance, avec une valeur de 2 ou 4.",
-            color: 'bg-yellow-200',
-          },
-          {
-            title: 'Gestion clavier & tactile',
-            desc: "J'ai géré les événements clavier pour PC et les swipe pour mobile, pour rendre le jeu interactif sur tous les devices.",
-            color: 'bg-purple-200',
-          },
-          {
-            title: 'Affichage et couleurs',
-            desc: "J'ai utilisé Tailwind pour styliser les cases avec des couleurs différentes selon les valeurs, et rendre le tout plus lisible et sympa.",
-            color: 'bg-pink-200',
-          },
-          {
-            title: 'Tests et ajustements',
-            desc: "Enfin, j'ai testé le jeu, ajusté les tailles, les paddings, et fait en sorte que ça reste agréable sur mobile comme sur grand écran.",
-            color: 'bg-orange-200',
-          },
-        ].map((step, i) => (
-          <div
-            key={i}
-            className={`${step.color} flex transform flex-col rounded-lg border border-zinc-700 p-4 transition-all hover:scale-105 hover:shadow-lg`}
-          >
-            <h3 className="mb-2 text-lg font-bold text-gray-900">{step.title}</h3>
-            <p className="text-sm text-gray-700">{step.desc}</p>
+
+      <section className="mt-6 text-sm">
+        <div className="mx-auto w-full px-4 sm:px-8 lg:max-w-5xl lg:px-8">
+          {/* <section className="mt-6 text-sm"> */}
+          <h2 className="mb-4 text-xl font-semibold text-white">Décomposition technique du jeu 2048</h2>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {Object.values(gameExplainData).map((block, index) => (
+              <DisplayBlock key={index} {...block} />
+            ))}
           </div>
-        ))}
-      </div>
-
-      <SyntaxHighlighter language="tsx" style={tomorrow}>
-        {`
-const mergeLine = (line: number[]): number[] => {
-const nonZero = line.filter(n => n !== 0);
-const merged: number[] = [];
-
-for (let i = 0; i < nonZero.length; i++) {
-  if (nonZero[i] === nonZero[i + 1]) {
-    merged.push(nonZero[i] * 2);
-    i++; // on saute la suivante
-  } else {
-    merged.push(nonZero[i]);
-  }
-}
-
-while (merged.length < 4) merged.push(0);
-return merged;
-};
-
-const NewMoveBox = (direction: string, grid: number[][]): number[][] => {
-switch (direction) {
-  case "left":
-    return grid.map(row => mergeLine(row));
-
-  case "right":
-    return grid.map(row =>
-      mergeLine([...row].reverse()).reverse()
-    );
-
-  case "top": {
-    const t = transpose(grid);
-    const moved = t.map(row => mergeLine(row));
-    return transpose(moved);
-  }
-
-  case "bottom": {
-    const t = transpose(grid);
-    const moved = t.map(row =>
-      mergeLine([...row].reverse()).reverse()
-    );
-    return transpose(moved);
-  }
-
-  default:
-    return grid;
-}
-};
-        `}
-      </SyntaxHighlighter>
+        </div>
+      </section>
     </div>
   );
 }
