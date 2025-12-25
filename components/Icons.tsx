@@ -1,5 +1,10 @@
 'use client';
-// src/components/Icons.js
+import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import KeyboardOutlinedIcon from '@mui/icons-material/KeyboardOutlined';
+import AppsIcon from '@mui/icons-material/Apps';
+import Grid4x4Icon from '@mui/icons-material/Grid4x4';
+import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import WebOutlinedIcon from '@mui/icons-material/WebOutlined';
@@ -14,6 +19,12 @@ import InputOutlinedIcon from '@mui/icons-material/InputOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 export {
+  SportsEsportsOutlinedIcon as GamesIcon,
+  BadgeOutlinedIcon as BadgeIcon,
+  KeyboardOutlinedIcon as KeyboardIcon,
+  AppsIcon,
+  Grid4x4Icon,
+  WbSunnyOutlinedIcon as SunnyIcon,
   HomeOutlinedIcon as HomeIcon,
   LibraryMusicIcon as MusicIcon,
   WebOutlinedIcon as LayoutIcon,

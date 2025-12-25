@@ -79,7 +79,7 @@ const certifications: Certification[] = [
 // ✅ Composant générique pour toutes les cartes avec hover
 const Card: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
   <div
-    className={`transform cursor-pointer rounded-sm bg-gray-800 p-3 shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-103 hover:bg-gradient-to-r hover:from-sky-950 hover:to-gray-900 hover:shadow-2xl sm:p-5 ${className || ''}`}>
+    className={`transform cursor-pointer rounded-sm bg-gray-950/50 p-3 shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-103 hover:bg-gradient-to-r hover:from-sky-950 hover:to-gray-950 hover:shadow-2xl sm:p-5 ${className || ''}`}>
     {children}
   </div>
 );
@@ -156,11 +156,6 @@ const CareerGraph = () => {
                 {name}
               </text>
 
-              {/* Year label */}
-              {/* <text x={midX} y={y - 4} fontSize="9" fill={color} textAnchor="middle" opacity="0.8">
-                {year}
-              </text> */}
-
               {/* Subtle glow effect */}
               <path
                 d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`}
@@ -184,7 +179,7 @@ const CareerGraph = () => {
 
 export default function Home() {
   return (
-    <div className="min-h-screen font-sans text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9 font-sans text-white">
       <main className="mx-auto max-w-6xl p-6">
         {/* Header */}
         <header className="z-10 text-center">

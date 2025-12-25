@@ -75,10 +75,8 @@ export function TextScramble({ text, className = '' }: TextScrambleProps) {
     };
   }, [scramble]);
 
-  console.log(displayText.split(''));
-
   return (
-    <div className={`group relative inline-flex cursor-pointer flex-col select-none ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div style={{ textWrap: 'nowrap' }} className={`group relative inline-flex cursor-pointer flex-col select-none ${className}`} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <span className="relative">
         {displayText.split('').map((char, i) => (
           <span

@@ -3,34 +3,13 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import Image from 'next/image';
 import avatar from '@/assets/ryan.jpg';
 
-import {
-  Children,
-  SidebarContainer,
-  SidebarWrapper,
-  // SidebarLogoWrapper,
-  // SidebarLogo,
-  // SidebarBrand,
-  // SidebarToggler,
-} from './SidebarStyles';
+import { Children, SidebarContainer, SidebarWrapper } from './SidebarStyles';
 import { SidebarItems } from '..';
 
 type DisplayProp = { $displaySidebar: boolean };
 
-const SCSidebarContainer = SidebarContainer as unknown as React.ComponentType<
-  DisplayProp & React.HTMLAttributes<HTMLDivElement>
->;
-// const SCSidebarLogoWrapper = SidebarLogoWrapper as unknown as React.ComponentType<
-//   DisplayProp & React.HTMLAttributes<HTMLDivElement>
-// >;
-// const SCSidebarBrand = SidebarBrand as unknown as React.ComponentType<
-//   DisplayProp & React.HTMLAttributes<HTMLElement>
-// >;
-// const SCSidebarToggler = SidebarToggler as unknown as React.ComponentType<
-//   DisplayProp & React.ButtonHTMLAttributes<HTMLButtonElement>
-// >;
-const SCChildren = Children as unknown as React.ComponentType<
-  DisplayProp & React.HTMLAttributes<HTMLDivElement>
->;
+const SCSidebarContainer = SidebarContainer as unknown as React.ComponentType<DisplayProp & React.HTMLAttributes<HTMLDivElement>>;
+const SCChildren = Children as unknown as React.ComponentType<DisplayProp & React.HTMLAttributes<HTMLDivElement>>;
 const SCSidebarItems = SidebarItems as unknown as React.ComponentType<SidebarItemsProps>;
 
 interface SidebarItemsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -77,8 +56,7 @@ export default function Sidebar({ children }: SidebarProps) {
       <SCSidebarContainer
         // className="flex min-h-screen w-[10rem] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-xl"
         className="sidebar-shadow flex min-h-screen w-[10rem]"
-        $displaySidebar={displaySidebar}
-      >
+        $displaySidebar={displaySidebar}>
         <SidebarWrapper>
           <div className={`sidebar-profile ${!displaySidebar ? '!p-0' : ''}`}>
             <div className="avatar-wrapper flex-1">

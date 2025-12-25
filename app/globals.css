@@ -259,3 +259,28 @@ body {
 .sidebar-grid   {
   background-color: oklch(31.714% 0.00004 271.152) !important;
 }
+
+.hover-shadow-card:hover {
+  /* appli class from tailwind */
+  @apply hover:-translate-y-1 hover:scale-103 hover:shadow-xl;
+}
+
+.hover-shadow-blue-card:hover {
+  @apply hover:-translate-y-1 hover:scale-103;
+  box-shadow: 4px 7px 16px 3px rgba(59, 130, 246, 0.3);
+}
+
+.hover-shadow-green-card:hover {
+  @apply hover:-translate-y-1 hover:scale-103;
+  box-shadow: 4px 7px 16px 3px rgba(34, 197, 94, 0.3);
+}
+
+.hover-shadow-purple-card:hover {
+  @apply hover:-translate-y-1 hover:scale-103;
+  box-shadow: 4px 7px 16px 3px rgba(168, 85, 247, 0.3);
+}
+
+.hover-shadow-yellow-card:hover {
+  @apply hover:-translate-y-1 hover:scale-103;
+  box-shadow: 4px 7px 16px 3px rgba(247, 244, 85, 0.3);
+}

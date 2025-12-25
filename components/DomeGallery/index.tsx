@@ -180,7 +180,7 @@ export default function DomeGallery({
   dragSensitivity = DEFAULTS.dragSensitivity,
   enlargeTransitionMs = DEFAULTS.enlargeTransitionMs,
   segments = DEFAULTS.segments,
-  dragDampening = 0,
+  dragDampening = 1,
   openedImageWidth = '70vw',
   openedImageHeight = '60vh',
   imageBorderRadius = '20px',
@@ -225,14 +225,14 @@ export default function DomeGallery({
     if (scrollLockedRef.current) return;
     if (typeof document === 'undefined') return;
     scrollLockedRef.current = true;
-    document.body.classList.add('dg-scroll-lock');
+    // document.body.classList.add('dg-scroll-lock');
   }, []);
   const unlockScroll = useCallback(() => {
     if (!scrollLockedRef.current) return;
     if (typeof document === 'undefined') return;
     if (rootRef.current?.getAttribute('data-enlarging') === 'true') return;
     scrollLockedRef.current = false;
-    document.body.classList.remove('dg-scroll-lock');
+    // document.body.classList.remove('dg-scroll-lock');
   }, []);
 
   const items = useMemo(() => buildItems(allCities, segments), [allCities, segments]);
@@ -335,15 +335,15 @@ export default function DomeGallery({
 
   const startInertia = useCallback(
     (vx: number, vy: number) => {
-      const MAX_V = 1.4;
-      let vX = clamp(vx, -MAX_V, MAX_V) * 80;
-      let vY = clamp(vy, -MAX_V, MAX_V) * 80;
+      const MAX_V = 14;
+      let vX = clamp(vx, -MAX_V, MAX_V) * 400;
+      let vY = clamp(vy, -MAX_V, MAX_V) * 400;
 
       let frames = 0;
       const d = clamp(dragDampening ?? 0.6, 0, 1);
-      const frictionMul = 0.94 + 0.055 * d;
-      const stopThreshold = 0.015 - 0.01 * d;
-      const maxFrames = Math.round(90 + 270 * d);
+      const frictionMul = 0.962 + 0.015 * d; // ralentit beaucoup moins vite
+      const stopThreshold = 0.08; // s'arrête seulement à très basse vitesse
+      const maxFrames = 100; // permet un mouvement très long
 
       const step = () => {
         vX *= frictionMul;
@@ -392,8 +392,9 @@ export default function DomeGallery({
           if (dist2 > 16) movedRef.current = true;
         }
 
-        const nextX = clamp(startRotRef.current.x - dyTotal / dragSensitivity, -maxVerticalRotationDeg, maxVerticalRotationDeg);
-        const nextY = wrapAngleSigned(startRotRef.current.y + dxTotal / dragSensitivity);
+        const speedMultiplier = 5; // 1 = normal, >1 = plus rapide
+        const nextX = clamp(startRotRef.current.x - (dyTotal / dragSensitivity) * speedMultiplier, -maxVerticalRotationDeg, maxVerticalRotationDeg);
+        const nextY = wrapAngleSigned(startRotRef.current.y + (dxTotal / dragSensitivity) * speedMultiplier);
 
         if (rotationRef.current.x !== nextX || rotationRef.current.y !== nextY) {
           rotationRef.current = { x: nextX, y: nextY };
@@ -570,8 +571,6 @@ export default function DomeGallery({
       const name = parent.dataset.name || (el.querySelector('img') as HTMLImageElement)?.name;
 
       if (!src || !frameRef.current || !mainRef.current) return;
-      console.log('parent.dataset');
-      console.log(parent.dataset);
 
       const tileRect = el.getBoundingClientRect();
       closingDataRef.current = {
@@ -666,6 +665,8 @@ export default function DomeGallery({
   }, [overlay, enlargeTransitionMs, unlockScroll]);
 
   useEffect(() => {
+    document.body.classList.add('dg-scroll-lock');
+
     return () => {
       document.body.classList.remove('dg-scroll-lock');
     };
