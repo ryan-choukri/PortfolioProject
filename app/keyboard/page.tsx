@@ -100,20 +100,13 @@ const KeyboardGame = () => {
 
       {gameEnding && (
         <div className="pointer-events-auto absolute inset-0 z-10 mt-50 flex flex-col items-center">
-          <div
-            style={{ padding: '30px' }}
-            className="flex flex-col items-center justify-center rounded-xl bg-black/50 p-12"
-          >
+          <div style={{ padding: '30px' }} className="flex flex-col items-center justify-center rounded-xl bg-black/50 p-12">
             <p className="mb-6 text-center text-2xl font-extrabold text-white">Resultat</p>
             <p className="text-center text-white">
               Temps : {(timer / 10).toFixed(2)}
               {"s , Nombre d'erreurs : " + errors + ' , Nombre de mots: ' + errors}
             </p>
-            <button
-              style={{ padding: '6px 17px', margin: '18px' }}
-              onClick={handlePlay}
-              className="m-4 rounded-lg bg-red-500 px-6 py-3 text-lg font-bold text-white transition hover:bg-red-600"
-            >
+            <button style={{ padding: '6px 17px', margin: '18px' }} onClick={handlePlay} className="m-4 rounded-lg bg-red-500 px-6 py-3 text-lg font-bold text-white transition hover:bg-red-600">
               Rejouer
             </button>
           </div>
@@ -128,8 +121,6 @@ const KeyboardGame = () => {
             .map((val, index) => {
               // console.log('val', val);
               const wordFromUser = userInput.trim().split(/\s+/);
-              // console.log('userInput', wordFromUser[index]);
-              console.log(wordFromUser[index]?.length, wordFromUser[index]?.length);
               if (val === wordFromUser[index]) {
                 return (
                   <span className="text-green-700" key={index}>
@@ -160,11 +151,7 @@ const KeyboardGame = () => {
           onChange={handleChange}
         />
         {gameActive && (
-          <button
-            type="button"
-            onClick={clickOnValidate}
-            className="disabled w-full rounded-b-lg bg-green-500 px-4 py-3 font-bold text-white transition hover:bg-green-600"
-          >
+          <button type="button" onClick={clickOnValidate} className="disabled w-full rounded-b-lg bg-green-500 px-4 py-3 font-bold text-white transition hover:bg-green-600">
             Validé (Ou apuyer sur entrée)
           </button>
         )}
@@ -178,10 +165,7 @@ const KeyboardGame = () => {
   "#284e8c"  // Pastel lavande */}
 
       {/* Bouton Play */}
-      <button
-        onClick={handlePlay}
-        className="rounded-lg bg-red-500 px-6 py-3 text-lg font-bold text-white transition hover:bg-red-600"
-      >
+      <button onClick={handlePlay} className="rounded-lg bg-red-500 px-6 py-3 text-lg font-bold text-white transition hover:bg-red-600">
         Play
       </button>
       <div className="mx-auto mt-8 grid w-full max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
@@ -226,8 +210,7 @@ const KeyboardGame = () => {
           <div
             key={i}
             style={{ color: step.textColor, backgroundColor: step.color }} // <- ici la couleur
-            className={`${step.color} flex transform flex-col justify-between rounded-lg border border-zinc-700 p-4 transition-all hover:scale-105 hover:shadow-lg`}
-          >
+            className={`${step.color} flex transform flex-col justify-between rounded-lg border border-zinc-700 p-4 transition-all hover:scale-105 hover:shadow-lg`}>
             <h3 className="mb-2 text-lg font-bold">{step.title}</h3>
             <p className="text-sm">{step.desc}</p>
           </div>
