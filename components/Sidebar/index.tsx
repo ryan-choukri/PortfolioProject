@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, ReactNode } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import avatar from '@/assets/ryan.jpg';
 
 import { Children, SidebarContainer, SidebarWrapper } from './SidebarStyles';
@@ -59,16 +60,20 @@ export default function Sidebar({ children }: SidebarProps) {
         $displaySidebar={displaySidebar}>
         <SidebarWrapper>
           <div className={`sidebar-profile ${!displaySidebar ? '!p-0' : ''}`}>
-            <div className="avatar-wrapper flex-1">
+            <Link href="/contact" className="avatar-wrapper flex-1 cursor-pointer transition-opacity hover:opacity-80">
               <Image src={avatar} alt="Profile" width={56} height={56} className="avatar" />
 
               {/* <img src="https://i.pravatar.cc/150?img=12" alt="Profile" className="avatar" /> */}
               <span className={`status-dot ${!displaySidebar ? '!hidden' : ''}`} />
-            </div>
+            </Link>
 
             <div className={`profile-text ${!displaySidebar ? '!hidden' : ''}`}>
-              <span className="status-text">Disponible</span>
-              <span className="role-text">Ryan</span>
+              <Link href="/contact" className="cursor-pointer transition-opacity hover:opacity-80">
+                <span className="status-text">Disponible</span>
+              </Link>
+              <Link href="/contact" className="cursor-pointer transition-opacity hover:opacity-80">
+                <span className="role-text">Ryan</span>
+              </Link>
             </div>
           </div>
           {/* Render the SidebarItems component */}

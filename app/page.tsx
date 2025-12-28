@@ -1,5 +1,6 @@
+'use client';
 // pages/index.tsx
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TextScramble } from '../components/ui/text-scramble';
 
 type Experience = { company: string; role: string; period: string; description: string };
@@ -85,6 +86,42 @@ const Card: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ child
 );
 
 const CareerGraph = () => {
+  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+
+      const rect = containerRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Calculate mouse position relative to center (-1 to 1)
+      const mouseX = (e.clientX - centerX) / (rect.width / 2);
+      const mouseY = (e.clientY - centerY) / (rect.height / 2);
+
+      // Apply more pronounced tilt (max 25 degrees) in opposite direction
+      const maxTilt = 12;
+      const computeX = -mouseX * maxTilt;
+      const computeY = mouseY * maxTilt;
+      // console.log('mouseX, mouseY', mouseY * maxTilt);
+      if (Math.abs(computeY) > 40) return;
+      //Allow max possible X rotate on 32 on computeY
+      setTilt({
+        rotateY: computeX, // Opposite horizontal tilt
+        rotateX: computeY, // Opposite vertical tilt
+      });
+    };
+
+    // Add global mouse move listener
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+    };
+  }, []);
+
   // Configuration de la hauteur
   const branchHeight = 80; // Hauteur entre la base et le haut des branches
   const baseY = 120;
@@ -106,7 +143,14 @@ const CareerGraph = () => {
   const yearSpacing = (svgWidth - 40) / (years.length - 1);
 
   return (
-    <div className="mb-4 flex justify-center">
+    <div
+      ref={containerRef}
+      className="svg-container mb-4 flex justify-center"
+      style={{
+        transform: `perspective(1200px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+        transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        transformStyle: 'preserve-3d',
+      }}>
       <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
         {/* Base line representing life timeline */}
         <line x1="20" y1={baseY} x2={svgWidth - 20} y2={baseY} stroke="#bec5ceff" strokeWidth="4" />

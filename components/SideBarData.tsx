@@ -1,6 +1,6 @@
 'use client';
 // src/components/Data.js
-import { GamesIcon, BadgeIcon, KeyboardIcon, MusicIcon, SunnyIcon, Grid4x4Icon, AppsIcon } from './Icons';
+import { GamesIcon, BadgeIcon, KeyboardIcon, MusicIcon, SunnyIcon, Grid4x4Icon, AppsIcon, ContactIcon } from './Icons';
 
 export const SIDEBAR_DATA = [
   {
@@ -44,5 +44,11 @@ export const SIDEBAR_DATA = [
     name: 'Jeux Mobile',
     path: 'mobilegames',
     icon: <GamesIcon />,
+  },
+  {
+    id: 8,
+    name: 'Contact',
+    path: 'contact',
+    icon: <ContactIcon />,
   },
 ];

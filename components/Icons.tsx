@@ -18,6 +18,7 @@ import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
 import InputOutlinedIcon from '@mui/icons-material/InputOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 export {
   SportsEsportsOutlinedIcon as GamesIcon,
   BadgeOutlinedIcon as BadgeIcon,
@@ -38,4 +39,5 @@ export {
   InputOutlinedIcon as ModalIcon,
   ArrowBackIcon,
   ArrowRightOutlinedIcon as ArrowIcon,
+  EmailOutlinedIcon as ContactIcon,
 };
