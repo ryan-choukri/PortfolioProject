@@ -130,12 +130,12 @@ const CareerGraph = () => {
 
   // Données chronologiques de 2020 à 2026
   const experiences = [
-    { name: 'IONISx', startX: -22, endX: 70, color: '#ebe575ff', heightRatio: 0.3, year: '2018-2020' },
-    { name: 'Fastory', startX: 50, endX: 198, color: '#ff67b3ff', heightRatio: 0.5, year: '2018-2020' },
-    { name: 'Assoconnect', startX: 190, endX: 380, color: '#428bffff', heightRatio: 0.7, year: '2020-2023' },
-    { name: 'Sail Ahead', startX: 370, endX: 430, color: '#3ce6b6ff', heightRatio: 0.4, year: '2023-2024' },
-    { name: 'Musicien', startX: 420, endX: 550, color: '#f37d38ff', heightRatio: 0.5, year: '2024-2025' },
-    { name: 'La Suite !\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0', startX: 530, endX: 622, color: '#f8d577ff', heightRatio: 0.7, year: '2025-2026' },
+    { name: 'IONISx', startX: -22, endX: 70, color: '#ebe575ff', heightRatio: 0.3, year: '2018-2020', depth: 4 },
+    { name: 'Fastory', startX: 50, endX: 198, color: '#ff67b3ff', heightRatio: 0.5, year: '2018-2020', depth: 4 },
+    { name: 'Assoconnect', startX: 190, endX: 380, color: '#428bffff', heightRatio: 0.7, year: '2020-2023', depth: 6 },
+    { name: 'Sail Ahead', startX: 370, endX: 430, color: '#3ce6b6ff', heightRatio: 0.4, year: '2023-2024', depth: 4 },
+    { name: 'Musicien', startX: 420, endX: 550, color: '#f37d38ff', heightRatio: 0.5, year: '2024-2025', depth: 5 },
+    { name: 'La Suite !\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0', startX: 530, endX: 622, color: '#f8d577ff', heightRatio: 0.7, year: '2025-2026', depth: 3 },
   ];
 
   // Années pour la timeline
@@ -145,78 +145,165 @@ const CareerGraph = () => {
   return (
     <div
       ref={containerRef}
-      className="svg-container mb-4 flex justify-center"
+      className="svg-container relative mb-4 flex h-[150px] justify-center"
       style={{
         transform: `perspective(1200px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
         transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
         transformStyle: 'preserve-3d',
       }}>
-      <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
-        {/* Base line representing life timeline */}
-        <line x1="20" y1={baseY} x2={svgWidth - 20} y2={baseY} stroke="#bec5ceff" strokeWidth="4" />
+      {/* Background Layer - Base timeline (pushed back) */}
+      <div
+        className="absolute inset-0 flex justify-center"
+        style={{
+          transform: 'translateZ(-20px)',
+          transformStyle: 'preserve-3d',
+        }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+          {/* Base line representing life timeline */}
+          <line x1="20" y1={baseY} x2={svgWidth - 20} y2={baseY} stroke="#bec5ceff" strokeWidth="4" />
 
-        {/* Start circle */}
-        <circle cx="20" cy={baseY} r="4" fill="#bec5ceff" />
+          {/* Start circle */}
+          <circle cx="20" cy={baseY} r="5" fill="#bec5ceff" />
 
-        {/* Base label */}
-        <text x="25" y={baseY + 47} fontSize="12" fill="#94A3B8" fontWeight="500">
-          {/* Ma vie & expériences professionnelles */}
-        </text>
+          {/* End circle */}
+          <circle cx={svgWidth - 20} cy={baseY} r="5" fill="#bec5ceff" />
 
-        {/* Years timeline */}
-        {years.map((year, index) => (
-          <text key={year} x={20 + index * yearSpacing} y={baseY + 17} fontSize="10" fill="#64748B" textAnchor="middle" fontWeight="400">
-            {year}
-          </text>
-        ))}
+          {/* Years timeline */}
+          {years.map((year, index) => (
+            <text key={year} x={20 + index * yearSpacing} y={baseY + 17} fontSize="12" fill="#64748B" textAnchor="middle" fontWeight="400">
+              {year}
+            </text>
+          ))}
+        </svg>
+      </div>
 
-        {/* Experience branches */}
-        {experiences.map((exp, index) => {
-          const { startX, endX, color, heightRatio, name, year } = exp;
-          const y = baseY - branchHeight * heightRatio; // Calcul dynamique de la hauteur
-          const midX = (startX + endX) / 2;
+      {/* Back Layer - Depth 1-2 experiences */}
+      <div
+        className="absolute inset-0 flex justify-center"
+        style={{
+          transform: 'translateZ(-15px)',
+          transformStyle: 'preserve-3d',
+        }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+          {experiences
+            .filter((exp) => exp.depth <= 2)
+            .map((exp, index) => {
+              const { startX, endX, color, heightRatio, name } = exp;
+              const y = baseY - branchHeight * heightRatio;
+              const midX = (startX + endX) / 2;
+              const originalIndex = experiences.findIndex((e) => e.name === exp.name);
 
-          return (
-            <g key={index}>
-              {/* Branch trapezoid path */}
-              <path d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`} stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" />
+              return (
+                <g key={index}>
+                  <path d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`} stroke={color} strokeWidth="3" fill="none" strokeLinejoin="round" />
+                  {originalIndex !== 0 && originalIndex !== experiences.length - 1 && (
+                    <>
+                      <circle cx={startX + 20} cy={y} r="3" fill={color} />
+                      <circle cx={endX - 20} cy={y} r="3" fill={color} />
+                    </>
+                  )}
+                  <circle cx={startX} cy={baseY} r="4" fill={color} />
+                  <circle cx={endX} cy={baseY} r="4" fill={color} />
+                  <text x={midX} y={y - 15} fontSize="11" fontWeight="400" fill={color} textAnchor="middle">
+                    {name}
+                  </text>
+                </g>
+              );
+            })}
+        </svg>
+      </div>
 
-              {index !== 0 && index !== experiences.length - 1 && (
-                <>
-                  {/* Top junction circles */}
-                  <circle cx={startX + 20} cy={y} r="4" fill={color} />
-                  <circle cx={endX - 20} cy={y} r="4" fill={color} />
-                </>
-              )}
+      {/* Middle Layer - Depth 3-4 experiences */}
+      <div
+        className="absolute inset-0 flex justify-center"
+        style={{
+          transform: 'translateZ(0px)',
+          transformStyle: 'preserve-3d',
+        }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+          {experiences
+            .filter((exp) => exp.depth >= 3 && exp.depth <= 4)
+            .map((exp, index) => {
+              const { startX, endX, color, heightRatio, name } = exp;
+              const y = baseY - branchHeight * heightRatio;
+              const midX = (startX + endX) / 2;
+              const originalIndex = experiences.findIndex((e) => e.name === exp.name);
 
-              {/* Start point circle */}
-              <circle cx={startX} cy={baseY} r="5" fill={color} />
+              return (
+                <g key={index}>
+                  <path d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`} stroke={color} strokeWidth="4" fill="none" strokeLinejoin="round" />
+                  {originalIndex !== 0 && originalIndex !== experiences.length - 1 && (
+                    <>
+                      <circle cx={startX + 20} cy={y} r="4" fill={color} />
+                      <circle cx={endX - 20} cy={y} r="4" fill={color} />
+                    </>
+                  )}
+                  <circle cx={startX} cy={baseY} r="5" fill={color} />
+                  <circle cx={endX} cy={baseY} r="5" fill={color} />
+                  <text x={midX} y={y - 15} fontSize="12" fontWeight="500" fill={color} textAnchor="middle" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                    {name}
+                  </text>
+                </g>
+              );
+            })}
+        </svg>
+      </div>
 
-              {/* End point circle */}
-              <circle cx={endX} cy={baseY} r="5" fill={color} />
+      {/* Front Layer - Depth 5-6 experiences (pulled forward) */}
+      <div
+        className="absolute inset-0 flex justify-center"
+        style={{
+          transform: 'translateZ(25px)',
+          transformStyle: 'preserve-3d',
+        }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+          {experiences
+            .filter((exp) => exp.depth >= 5)
+            .map((exp, index) => {
+              const { startX, endX, color, heightRatio, name } = exp;
+              const y = baseY - branchHeight * heightRatio;
+              const midX = (startX + endX) / 2;
+              const originalIndex = experiences.findIndex((e) => e.name === exp.name);
 
-              {/* Company name label */}
-              <text x={midX} y={y - 15} fontSize="12" fontWeight="500" fill={color} textAnchor="middle" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                {name}
-              </text>
+              return (
+                <g key={index}>
+                  <path
+                    d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`}
+                    stroke={color}
+                    strokeWidth="5"
+                    fill="none"
+                    strokeLinejoin="round"
+                    filter="drop-shadow(0 3px 6px rgba(0,0,0,0.4))"
+                  />
+                  {originalIndex !== 0 && originalIndex !== experiences.length - 1 && (
+                    <>
+                      <circle cx={startX + 20} cy={y} r="5" fill={color} filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
+                      <circle cx={endX - 20} cy={y} r="5" fill={color} filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
+                    </>
+                  )}
+                  <circle cx={startX} cy={baseY} r="6" fill={color} filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
+                  <circle cx={endX} cy={baseY} r="6" fill={color} filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))" />
+                  <text
+                    x={midX}
+                    y={y - 15}
+                    fontSize="13"
+                    fontWeight="600"
+                    fill={color}
+                    textAnchor="middle"
+                    style={{
+                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                      filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))',
+                    }}>
+                    {name}
+                  </text>
 
-              {/* Subtle glow effect */}
-              <path
-                d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`}
-                stroke={color}
-                strokeWidth="1"
-                fill="none"
-                strokeLinejoin="round"
-                opacity="0.3"
-                filter="blur(1px)"
-              />
-            </g>
-          );
-        })}
-
-        {/* End circle */}
-        <circle cx={svgWidth - 20} cy={baseY} r="4" fill="#bec5ceff" />
-      </svg>
+                  {/* Enhanced glow for front elements */}
+                  <path d={`M ${startX} ${baseY} L ${startX + 20} ${y} L ${endX - 20} ${y} L ${endX} ${baseY}`} stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round" filter="blur(3px)" />
+                </g>
+              );
+            })}
+        </svg>
+      </div>
     </div>
   );
 };

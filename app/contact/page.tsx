@@ -31,7 +31,7 @@ const Contact = () => {
     setStatus('idle');
 
     try {
-      const response = await fetch('https://storyteller-clone.netlify.app/contact', {
+      const response = await fetch('https://eonluyri7xagh3q.m.pipedream.net', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

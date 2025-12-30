@@ -7,7 +7,6 @@ export const Children = styled.div<{ displaySidebar: boolean }>`
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-left: ${({ displaySidebar }) => (displaySidebar ? '10rem' : '10rem')};
   @media (max-width: 468px) {
     padding-left: 3rem;
   }

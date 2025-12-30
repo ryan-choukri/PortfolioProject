@@ -56,7 +56,7 @@ export default function Sidebar({ children }: SidebarProps) {
     <React.Fragment>
       <SCSidebarContainer
         // className="flex min-h-screen w-[10rem] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 shadow-xl"
-        className="sidebar-shadow flex min-h-screen w-[10rem]"
+        className="sidebar-shadow flex min-h-screen w-[10rem] lg:w-[12rem]"
         $displaySidebar={displaySidebar}>
         <SidebarWrapper>
           <div className={`sidebar-profile ${!displaySidebar ? '!p-0' : ''}`}>
@@ -82,7 +82,9 @@ export default function Sidebar({ children }: SidebarProps) {
       </SCSidebarContainer>
 
       {/* Render the children */}
-      <SCChildren $displaySidebar={displaySidebar}>{children}</SCChildren>
+      <SCChildren className={'pl-[10rem] lg:pl-[12rem]'} $displaySidebar={displaySidebar}>
+        {children}
+      </SCChildren>
     </React.Fragment>
   );
 }
