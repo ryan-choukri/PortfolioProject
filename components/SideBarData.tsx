@@ -1,6 +1,6 @@
 'use client';
 // src/components/Data.js
-import { GamesIcon, BadgeIcon, KeyboardIcon, MusicIcon, SunnyIcon, Grid4x4Icon, AppsIcon, ContactIcon } from './Icons';
+import { GamesIcon, BadgeIcon, TvOutlinedIcon, KeyboardIcon, MusicIcon, SunnyIcon, Grid4x4Icon, AppsIcon, ContactIcon } from './Icons';
 
 export const SIDEBAR_DATA = [
   {
@@ -8,6 +8,18 @@ export const SIDEBAR_DATA = [
     name: 'Mon CV',
     path: '/',
     icon: <BadgeIcon />,
+  },
+  {
+    id: 17,
+    name: 'App Watch Finder',
+    path: 'watchfinder',
+    icon: <TvOutlinedIcon />,
+  },
+  {
+    id: 7,
+    name: 'Jeux Mobile',
+    path: 'mobilegames',
+    icon: <GamesIcon />,
   },
   {
     id: 5,
@@ -38,12 +50,6 @@ export const SIDEBAR_DATA = [
     name: 'BPM counter',
     path: 'bpmcounter',
     icon: <MusicIcon />,
-  },
-  {
-    id: 7,
-    name: 'Jeux Mobile',
-    path: 'mobilegames',
-    icon: <GamesIcon />,
   },
   {
     id: 8,

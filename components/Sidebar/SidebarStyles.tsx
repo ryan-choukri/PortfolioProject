@@ -64,7 +64,7 @@ export const ItemContainer = styled.li`
     background: rgba(117, 117, 117, 0.06);
   }
   &.active {
-    background: rgba(215, 215, 215, 0.06);
+    background: rgb(76 88 93 / 16%);
   }
 `;
 export const ItemWrapper = styled.div`

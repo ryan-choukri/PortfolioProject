@@ -4,7 +4,8 @@ import { TextScramble } from '@/components/ui/text-scramble';
 import { useEffect } from 'react';
 import { IPhoneMockup } from 'react-device-mockup';
 import Image from 'next/image';
-import watchfinderImgUrl from '@/assets/mobilegame.png';
+import watchfinderImgUrl from '@/assets/watchfinder.png';
+import swipeImgUrl from '@/assets/swipe.png';
 
 const removeElementByClassAndStyle = () => {
   // HERE GET the element inside iphone-display with the background-color: rgb(204, 204, 204); and change its to transpar
@@ -28,7 +29,7 @@ const removeElementByClassAndStyle = () => {
     screenElement.remove();
   }
 };
-const ToutVaBienPage = () => {
+const WatchFinderPage = () => {
   useEffect(() => {
     // Initial call
     console.log('PASSAGE Initial call');
@@ -65,62 +66,67 @@ const ToutVaBienPage = () => {
       {/* Hero Section - Compact et immédiatement visible */}
       <section className="px-6 py-8 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-5xl">
-          <div className="grid items-center gap-8 lg:grid-cols-2">
+          <div className="grid items-center gap-8 md:grid-cols-2">
             {/* Contenu principal */}
             <div className="space-y-6">
               <div className="space-y-2">
-                <span className="text-grey-900 mb-3 inline-block rounded-full bg-green-700 px-3 py-1 text-sm font-medium">Jeu Mobile</span>
+                <span className="mb-3 inline-block rounded-full bg-blue-900 px-3 py-1 text-sm font-medium text-blue-300">Application Mobile</span>
                 <h1 className="text-5xl font-bold text-white lg:text-5xl">
-                  <TextScramble text="Tout&nbsp;Va&nbsp;Bien&nbsp;!" />
+                  <TextScramble text="WATCH&nbsp;FINDER" />
                 </h1>
-                <p className="text-xl text-gray-300">Jeu de réflexion et d&apos;énigmes logiques</p>
+                <p className="text-xl text-gray-300">Swipe pour trouver un film ou une série</p>
               </div>
-
               <p className="text-lg leading-relaxed text-gray-300">
-                Plongez dans un univers d&apos;énigmes captivantes où chaque case raconte une histoire. Développez votre logique à travers des défis progressifs et découvrez des mécaniques de jeu
-                innovantes.
+                Découvrez votre prochain film préféré grâce à l&apos;art du swipe ✨<br /> Et à la curation alimentée par l&apos;IA, car les ressources sont illimitées, n&apos;est-ce pas ?
               </p>
-
               <div className="flex flex-col gap-4 sm:flex-row">
                 <a
-                  href="https://storyteller-clone.netlify.app/"
+                  href="https://watch-finder.netlify.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center space-x-2 rounded-lg bg-green-700 px-6 py-3 font-semibold text-white transition-colors duration-200 hover:bg-green-800">
+                  className="flex items-center justify-center space-x-2 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition-colors duration-200 hover:bg-blue-700">
                   <span>📱</span>
                   <span>Site web</span>
                 </a>
                 {/* <button className="rounded-lg border border-gray-600 px-6 py-3 font-semibold text-gray-300 transition-colors duration-200 hover:bg-gray-700">Voir la démo</button> */}
               </div>
-
               {/* Stats rapides */}
-              <div className="grid grid-cols-3 gap-4 pt-4">
+              {/* <div className="grid grid-cols-3 gap-4 pt-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-400">10+</div>
+                  <div className="text-2xl font-bold text-blue-400">100+</div>
                   <div className="text-sm text-gray-400">Niveaux</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-400">4.8★</div>
-                  <div className="text-sm text-gray-400">Selon Mickey magazine</div>
+                  <div className="text-sm text-gray-400">Rating</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-400">20</div>
-                  <div className="text-sm text-gray-400">Joueurs ?</div>
+                  <div className="text-2xl font-bold text-purple-400">10k+</div>
+                  <div className="text-sm text-gray-400">Joueurs</div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Mockup/Image */}
-            <div className="flex justify-center lg:justify-center">
-              <div className="iphone-display text-center">
-                <a href="https://storyteller-clone.netlify.app/" target="_blank" rel="noopener noreferrer">
-                  {/* box-shadow: 2px 2px 2px 3px red; */}
-                  <IPhoneMockup frameColor={'#3f3f3f'} isLandscape frameOnly hideStatusBar screenWidth={350}>
-                    {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
-                    <Image width={350} height={700} src={watchfinderImgUrl} alt="Screenshot du jeu Tout va bien" />
-                  </IPhoneMockup>
-                </a>
-                <p className="mx-auto mt-4 max-w-xs text-sm text-gray-400">Un jeu de réflexion addictif qui défie votre logique à travers des énigmes progressives et des mécaniques innovantes.</p>
+            <div className="justify-center lg:justify-center">
+              <div className="iphone-display flex text-center">
+                {/* box-shadow: 2px 2px 2px 3px red; */}
+                <div className="mx-4">
+                  <a href="https://watch-finder.netlify.app/" target="_blank" rel="noopener noreferrer">
+                    <IPhoneMockup screenType="notch" frameColor={'#3f3f3f'} frameOnly hideStatusBar screenWidth={170}>
+                      {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
+                      <Image width={350} height={700} src={watchfinderImgUrl} alt="Screenshot du jeu Tout va bien" />
+                    </IPhoneMockup>
+                  </a>
+                </div>
+                <div className="mx-4">
+                  <a href="https://watch-finder.netlify.app/" target="_blank" rel="noopener noreferrer">
+                    <IPhoneMockup screenType="notch" frameColor={'#3f3f3f'} frameOnly hideStatusBar screenWidth={170}>
+                      {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
+                      <Image width={350} height={700} src={swipeImgUrl} alt="Screenshot du jeu Tout va bien" />
+                    </IPhoneMockup>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -353,4 +359,4 @@ const ToutVaBienPage = () => {
   );
 };
 
-export default ToutVaBienPage;
+export default WatchFinderPage;

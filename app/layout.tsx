@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Bebas_Neue, Oswald } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
 import { Waves } from '@/components/ui/wave-background';
@@ -12,6 +12,18 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+});
+
+const bebasNeue = Bebas_Neue({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-bebas',
+});
+
+const oswaldMono = Oswald({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-oswald',
 });
 
 export const metadata: Metadata = {
@@ -29,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${geistSans.variable} ${geistMono.variable} touch-none antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${oswaldMono.variable} touch-none antialiased`}>
         <div>
           {/* Sidebar fixe à gauche */}
           <Sidebar>

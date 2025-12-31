@@ -14,11 +14,11 @@ type Entity = {
   state: string;
   smyleyMeet: number[];
 };
-const MAX_POPULATION = 10500;
-const NATALITY_TARGET_LOW = 200;
-const NATALITY_TARGET_BEETWEEN_LOW = 600;
+const MAX_POPULATION = 2000;
+const NATALITY_TARGET_LOW = 350;
+const NATALITY_TARGET_BEETWEEN_LOW = 400;
 const NATALITY_TARGET_BEETWEEN_HIGH = 900;
-const NATALITY_TARGET_HIGH = 5000;
+const NATALITY_TARGET_HIGH = 1600;
 
 const GRID_SIZE = 100; // taille de la grille en nombre de cellules
 // const CELL_SIZE = 6; // taille d'une cellule en pixels
@@ -57,7 +57,6 @@ const makeSmiley = (x: number, y: number, id: number, state: string = 'normal'):
 
 const generateSmyleys = Array.from({ length: NUM_SMILEYS }, (_, i) => makeSmiley(Math.floor(Math.random() * GRID_SIZE), Math.floor(Math.random() * GRID_SIZE), i, 'normal'));
 
-// Commente cette focntion EmojiGame explique les interaction et la logique en quelque ligne
 export default function EmojiGame() {
   const [smileys, setSmileys] = useState<Entity[]>(generateSmyleys);
   const nextIdRef = useRef(smileys.length);
@@ -74,7 +73,6 @@ export default function EmojiGame() {
   const [nbDead, setNbDead] = useState(0);
   const [mousDisatanceEscape, setMousDisatanceEscape] = useState(10);
   const [mouseOnGrid, setMouseOnGrid] = useState(false);
-  // const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: -1, y: -1 });
   const mousePosRef = useRef<{ x: number; y: number }>({ x: -1, y: -1 });
 
   const hasSameId = (arr: number[], threshold: number): { find: boolean; otherids: number[] } => {

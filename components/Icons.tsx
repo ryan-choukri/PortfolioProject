@@ -8,6 +8,7 @@ import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import LibraryMusicIcon from '@mui/icons-material/LibraryMusic';
 import WebOutlinedIcon from '@mui/icons-material/WebOutlined';
+import TvOutlinedIcon from '@mui/icons-material/TvOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
@@ -20,6 +21,7 @@ import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 export {
+  TvOutlinedIcon,
   SportsEsportsOutlinedIcon as GamesIcon,
   BadgeOutlinedIcon as BadgeIcon,
   KeyboardOutlinedIcon as KeyboardIcon,

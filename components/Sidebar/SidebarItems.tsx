@@ -20,11 +20,21 @@ const SidebarItems = ({ $displaySidebar }: SidebarItemsProps) => {
           {index === 1 ? (
             <>
               <hr className="sidebar-separator" />
-              <p className={'pt-2 text-center text-xs font-semibold text-gray-300 ' + (!$displaySidebar ? 'text-[10px]' : '')}>
-                <span className={!$displaySidebar ? '!hidden' : ''}>Mes </span>Projets
+              <p className={'pt-2 text-center text-xs font-light !text-gray-400 ' + (!$displaySidebar ? 'text-[10px]' : '')}>
+                <span className={!$displaySidebar ? '!hidden' : ''}>Mes Projets</span>
               </p>
             </>
           ) : null}
+
+          {index === 3 ? (
+            <>
+              <hr className="sidebar-separator" />
+              <p className={'pt-2 text-center text-xs font-light !text-gray-400 ' + (!$displaySidebar ? 'text-[10px]' : '')}>
+                <span className={!$displaySidebar ? '!hidden' : ''}>Mes Petits Projets</span>
+              </p>
+            </>
+          ) : null}
+          {index === dummyData.length - 1 ? <hr className="sidebar-separator" /> : null}
           <ItemContainer
             key={index}
             onClick={() => {
@@ -32,7 +42,7 @@ const SidebarItems = ({ $displaySidebar }: SidebarItemsProps) => {
               router.push(itemData.path);
             }}
             /* Adding active class when the user clicks */
-            className={'text-sm font-semibold text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')}>
+            className={'text-[16px] text-zinc-400 ' + (activeItem === itemData.id ? 'active' : '')}>
             <ItemWrapper style={{ padding: '0.5rem 0.35rem' }}>
               <div className="text-gray-300">{itemData.icon}</div>
               <ItemName $displaySidebar={$displaySidebar}>{itemData.name}</ItemName>

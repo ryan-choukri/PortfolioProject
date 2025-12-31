@@ -60,14 +60,12 @@ export default function Sidebar({ children }: SidebarProps) {
         $displaySidebar={displaySidebar}>
         <SidebarWrapper>
           <div className={`sidebar-profile ${!displaySidebar ? '!p-0' : ''}`}>
-            <Link href="/contact" className="avatar-wrapper flex-1 cursor-pointer transition-opacity hover:opacity-80">
+            <Link href="/contact" className="avatar-wrapper lg:y-2 m-auto flex-5 cursor-pointer transition-opacity hover:opacity-80 lg:mx-5 lg:mr-0">
               <Image src={avatar} alt="Profile" width={56} height={56} className="avatar" />
-
-              {/* <img src="https://i.pravatar.cc/150?img=12" alt="Profile" className="avatar" /> */}
               <span className={`status-dot ${!displaySidebar ? '!hidden' : ''}`} />
             </Link>
 
-            <div className={`profile-text ${!displaySidebar ? '!hidden' : ''}`}>
+            <div className={`profile-text flex-4 ${!displaySidebar ? '!hidden' : ''}`}>
               <Link href="/contact" className="cursor-pointer transition-opacity hover:opacity-80">
                 <span className="status-text">Disponible</span>
               </Link>

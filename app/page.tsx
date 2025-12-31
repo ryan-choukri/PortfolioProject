@@ -19,21 +19,27 @@ const achievements: Achievement[] = [
 const experiencesDev: Experience[] = [
   {
     company: 'Assoconnect',
-    role: 'Fullstack Developpeur',
-    period: 'Avril 2020 - Fevrier 2023',
-    description: 'Développement d’applications React/Next.js avec focus sur UI/UX et performance.',
+    role: 'Développeur Full Stack',
+    period: 'Avril 2020 - Février 2023',
+    description: `Développement d’applications React et Next.js avec un fort focus sur l’UI/UX et la performance.`,
   },
   {
     company: 'Fastory',
-    role: 'Fullstack Developpeur',
-    period: 'Avr 2018 - Avr 2020',
-    description: 'Création d’APIs Node.js et intégration front-end moderne avec React.',
+    role: 'Développeur Full Stack',
+    period: 'Avril 2018 - Avril 2020',
+    description: `Refonte complète de l’extension Chrome Elegantt (React 16 / Node.js).
+Développement, maintenance et évolution de fonctionnalités en environnement de production.
+Collaboration avec les équipes produit, support et communication.
+Support client et résolution de problématiques techniques.`,
   },
   {
     company: 'IONISx',
-    role: 'Fullstack Developpeur',
-    period: 'Avr 2017 - Avr 2018',
-    description: 'Création d’APIs Node.js et intégration front-end moderne avec React.',
+    role: 'Développeur Full Stack',
+    period: 'Avril 2017 - Avril 2018',
+    description: `Développement et maintenance des fonctionnalités de la plateforme e-learning.
+Conception et mise en œuvre d’un outil de correction de code pour les étudiants.
+Amélioration de l’expérience utilisateur et optimisation des performances.
+Collaboration avec les équipes pédagogiques et techniques pour faire évoluer la plateforme.`,
   },
 ];
 
@@ -42,13 +48,15 @@ const experiencesVie: Experience[] = [
     company: 'Groupe de musique',
     role: 'Bassiste Chanteur Compositeur',
     period: 'Jan 2024 - Now',
-    description: 'Création d"un groupe de musique, composition et enregistrement de morceaux.',
+    description: `Création d’un groupe de rock/punk.
+Composition et enregistrement de morceaux, organisation du travail en groupe.
+Relations avec les salles et programmateurs, gestion du booking, des concerts et des tournées.`,
   },
   {
     company: 'Association SailAhead : New York',
-    role: 'Photographe Vidéaste ',
+    role: 'Bénévole / Photographe Vidéaste',
     period: 'Mai 2023 - Septembre 2023',
-    description: 'Création d’APIs Node.js et intégration front-end moderne avec React.',
+    description: `Engagement associatif chez SailAhead à New York : organisation d’événements favorisant l’accès aux activités nautiques pour des publics en reinsertion social.`,
   },
   {
     company: 'Road trip en Amérique',
@@ -80,7 +88,7 @@ const certifications: Certification[] = [
 // ✅ Composant générique pour toutes les cartes avec hover
 const Card: React.FC<React.PropsWithChildren<{ className?: string }>> = ({ children, className }) => (
   <div
-    className={`transform cursor-pointer rounded-sm bg-gray-950/50 p-3 shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-103 hover:bg-gradient-to-r hover:from-sky-950 hover:to-gray-950 hover:shadow-2xl sm:p-5 ${className || ''}`}>
+    className={`font-oswald transform cursor-pointer rounded-sm bg-gray-950/50 p-3 shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-103 hover:bg-gradient-to-r hover:from-sky-950 hover:to-gray-950 hover:shadow-2xl sm:p-5 ${className || ''}`}>
     {children}
   </div>
 );
@@ -130,7 +138,7 @@ const CareerGraph = () => {
 
   // Données chronologiques de 2020 à 2026
   const experiences = [
-    { name: 'IONISx', startX: -22, endX: 70, color: '#ebe575ff', heightRatio: 0.3, year: '2018-2020', depth: 4 },
+    { name: 'IONISx', startX: -22, endX: 70, color: '#ebe575ff', heightRatio: 0.3, year: '2018-2020', depth: 6 },
     { name: 'Fastory', startX: 50, endX: 198, color: '#ff67b3ff', heightRatio: 0.5, year: '2018-2020', depth: 4 },
     { name: 'Assoconnect', startX: 190, endX: 380, color: '#428bffff', heightRatio: 0.7, year: '2020-2023', depth: 6 },
     { name: 'Sail Ahead', startX: 370, endX: 430, color: '#3ce6b6ff', heightRatio: 0.4, year: '2023-2024', depth: 4 },
@@ -145,7 +153,7 @@ const CareerGraph = () => {
   return (
     <div
       ref={containerRef}
-      className="svg-container relative mb-4 flex h-[150px] justify-center"
+      className="svg-container relative mb-3 flex h-[120px] justify-center sm:h-[120px] md:mb-4 lg:h-[190px]"
       style={{
         transform: `perspective(1200px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
         transition: 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -158,7 +166,7 @@ const CareerGraph = () => {
           transform: 'translateZ(-20px)',
           transformStyle: 'preserve-3d',
         }}>
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '700px', height: 'auto' }}>
           {/* Base line representing life timeline */}
           <line x1="20" y1={baseY} x2={svgWidth - 20} y2={baseY} stroke="#bec5ceff" strokeWidth="4" />
 
@@ -184,7 +192,7 @@ const CareerGraph = () => {
           transform: 'translateZ(-15px)',
           transformStyle: 'preserve-3d',
         }}>
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '700px', height: 'auto' }}>
           {experiences
             .filter((exp) => exp.depth <= 2)
             .map((exp, index) => {
@@ -220,7 +228,7 @@ const CareerGraph = () => {
           transform: 'translateZ(0px)',
           transformStyle: 'preserve-3d',
         }}>
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '700px', height: 'auto' }}>
           {experiences
             .filter((exp) => exp.depth >= 3 && exp.depth <= 4)
             .map((exp, index) => {
@@ -256,7 +264,7 @@ const CareerGraph = () => {
           transform: 'translateZ(25px)',
           transformStyle: 'preserve-3d',
         }}>
-        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '600px', height: 'auto' }}>
+        <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full" style={{ maxWidth: '700px', height: 'auto' }}>
           {experiences
             .filter((exp) => exp.depth >= 5)
             .map((exp, index) => {
@@ -310,12 +318,12 @@ const CareerGraph = () => {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9 font-sans text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9">
       <main className="mx-auto max-w-6xl p-6">
         {/* Header */}
         <header className="z-10 text-center">
-          <h1 className="mb-2 text-4xl font-bold sm:text-6xl">
-            <TextScramble text="Ryan&nbsp;Choukri" />
+          <h1 className="mb-2 h-[67px] text-[17vw] leading-[1] font-bold sm:text-7xl lg:h-full lg:text-8xl lg:leading-[0.8]">
+            <TextScramble text="RYAN&nbsp;CHOUKRI" />
           </h1>
           <p className="text-sm text-gray-300 sm:text-xl">Frontend & Fullstack Developer</p>
         </header>
@@ -425,11 +433,14 @@ export default function Home() {
             <Card>
               <h2 className="mb-4 border-b border-gray-700 pb-2 text-2xl font-semibold">Skills</h2>
               <ul className="list-inside list-disc space-y-1 text-gray-300">
-                <li>React / Next.js</li>
+                <li>React / Next.js / Vite</li>
                 <li>TypeScript / JavaScript</li>
-                <li>Node.js / Express</li>
-                <li>CSS / Tailwind / SCSS</li>
-                <li>REST / MongoDB</li>
+                <li>Node.js / Express / NestJS</li>
+                <li>Bonnes pratiques & patterns de sécurité</li>
+                <li>Expérience en environnement de production</li>
+                <li>Jest / Playwright</li>
+                <li>Git / Agent IA</li>
+                <li>API REST / MongoDB / PostgreSQL</li>
               </ul>
             </Card>
           </aside>
