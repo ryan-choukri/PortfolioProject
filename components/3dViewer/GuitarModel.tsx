@@ -4,8 +4,9 @@ import React, { useEffect, useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { Group } from 'three';
+import { ThreeElements } from '@react-three/fiber';
 
-export function GuitarModel(props: any) {
+export function GuitarModel(props: ThreeElements['group']) {
   // Using a high-quality placeholder model (Les Paul style) since we cannot generate a binary .glb file directly.
   // You can replace this URL with your own Fender Telecaster .glb file.
   const { scene } = useGLTF('/assets/iphone3d/iphone.gltf');
@@ -28,11 +29,11 @@ export function GuitarModel(props: any) {
           // Ensure materials are not flat shaded
           if (mesh.material) {
             const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            materials.forEach((mat: any) => {
-              if (mat.flatShading !== undefined) mat.flatShading = false;
+            materials.forEach((mat: THREE.Material) => {
+              if ('flatShading' in mat) (mat as THREE.MeshStandardMaterial).flatShading = false;
               // Optional: Adjust material properties for better look
-              if (mat.roughness !== undefined) mat.roughness = 0.9;
-              if (mat.metalness !== undefined) mat.metalness = 0.4;
+              if ('roughness' in mat) (mat as THREE.MeshStandardMaterial).roughness = 0.9;
+              if ('metalness' in mat) (mat as THREE.MeshStandardMaterial).metalness = 0.4;
             });
           }
         }
