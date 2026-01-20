@@ -9,6 +9,7 @@ export default function GuitarView() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -30,7 +31,7 @@ export default function GuitarView() {
         style={{ background: 'transparent', width: '100%', height: '100%' }}>
         {/* Lighting setup without external HDRI */}
         <ambientLight intensity={0.8} />
-        <hemisphereLight intensity={1} groundColor="#444444" skyColor="#ffffff" />
+        <hemisphereLight intensity={1} groundColor="#444444" color="#ffffff" />
         <directionalLight position={[10, 10, 5]} intensity={2} castShadow />
         <directionalLight position={[-10, -10, -5]} intensity={1} />
         <pointLight position={[0, 5, 0]} intensity={1} />
