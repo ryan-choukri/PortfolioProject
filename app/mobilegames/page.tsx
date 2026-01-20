@@ -63,7 +63,7 @@ const ToutVaBienPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9">
       {/* Hero Section - Compact et immédiatement visible */}
-      <section className="px-6 py-8 sm:px-8 lg:px-12">
+      <section className="px-5 py-8 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-5xl">
           <div className="grid items-center gap-8 lg:grid-cols-2">
             {/* Contenu principal */}
@@ -111,16 +111,26 @@ const ToutVaBienPage = () => {
             </div>
 
             {/* Mockup/Image */}
-            <div className="flex justify-center lg:justify-center">
-              <div className="iphone-display text-center">
-                <a href="https://storyteller-clone.netlify.app/" target="_blank" rel="noopener noreferrer">
+            <div className="flex w-full justify-center sm:w-full lg:justify-center">
+              <div className="iphone-display w-full max-w-[350px] text-center">
+                <a href="https://storyteller-clone.netlify.app/" target="_blank" rel="noopener noreferrer" className="block">
                   {/* box-shadow: 2px 2px 2px 3px red; */}
-                  <IPhoneMockup frameColor={'#3f3f3f'} isLandscape frameOnly hideStatusBar screenWidth={350}>
-                    {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
-                    <Image width={350} height={700} src={watchfinderImgUrl} alt="Screenshot du jeu Tout va bien" />
-                  </IPhoneMockup>
+                  <div className="hidden sm:flex">
+                    <IPhoneMockup frameColor={'#3f3f3f'} isLandscape frameOnly hideStatusBar screenWidth={350}>
+                      {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
+                      <Image width={350} height={700} src={watchfinderImgUrl} alt="Screenshot du jeu Tout va bien" />
+                    </IPhoneMockup>
+                  </div>
+                  <div className="flex justify-center sm:hidden">
+                    <IPhoneMockup frameColor={'#3f3f3f'} isLandscape frameOnly hideStatusBar screenWidth={230}>
+                      {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
+                      <Image width={350} height={700} src={watchfinderImgUrl} alt="Screenshot du jeu Tout va bien" />
+                    </IPhoneMockup>
+                  </div>
                 </a>
-                <p className="mx-auto mt-4 max-w-xs text-sm text-gray-400">Un jeu de réflexion addictif qui défie votre logique à travers des énigmes progressives et des mécaniques innovantes.</p>
+                <p className="mx-auto mt-4 hidden max-w-xs text-sm text-gray-400 sm:flex">
+                  Un jeu de réflexion addictif qui défie votre logique à travers des énigmes progressives et des mécaniques innovantes.
+                </p>
               </div>
             </div>
           </div>
@@ -293,12 +303,11 @@ const ToutVaBienPage = () => {
       </section>
 
       {/* Screenshots Section */}
-      <section className="bg-gradient-to-br from-gray-800/5 to-green-800/30 px-6 py-12 sm:px-8 lg:px-12">
+      {/* <section className="bg-gradient-to-br from-gray-800/5 to-green-800/30 px-6 py-12 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center text-3xl font-bold text-white">Aperçu du Jeu</h2>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {/* Screenshot placeholders avec mockup réaliste */}
             {[
               { title: 'Menu Principal', desc: 'Interface épurée et intuitive' },
               { title: 'Gameplay', desc: 'Mécaniques de jeu fluides' },
@@ -327,7 +336,7 @@ const ToutVaBienPage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Conclusion + CTA */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-16 sm:px-8 lg:px-12">

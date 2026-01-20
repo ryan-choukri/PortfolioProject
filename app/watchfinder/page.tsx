@@ -64,7 +64,7 @@ const WatchFinderPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9">
       {/* Hero Section - Compact et immédiatement visible */}
-      <section className="px-6 py-8 sm:px-8 lg:px-12">
+      <section className="px-5 py-8 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-5xl">
           <div className="grid items-center gap-8 md:grid-cols-2">
             {/* Contenu principal */}
@@ -108,7 +108,7 @@ const WatchFinderPage = () => {
             </div>
 
             {/* Mockup/Image */}
-            <div className="justify-center lg:justify-center">
+            <div className="flex h-[410px] w-[210px] sm:h-full sm:w-full lg:justify-center">
               <div className="iphone-display flex text-center">
                 {/* box-shadow: 2px 2px 2px 3px red; */}
                 <div className="mx-4">
@@ -119,7 +119,7 @@ const WatchFinderPage = () => {
                     </IPhoneMockup>
                   </a>
                 </div>
-                <div className="mx-4">
+                <div className="mx-4 hidden sm:flex">
                   <a href="https://watch-finder.netlify.app/" target="_blank" rel="noopener noreferrer">
                     <IPhoneMockup screenType="notch" frameColor={'#3f3f3f'} frameOnly hideStatusBar screenWidth={170}>
                       {/* display here an image src https://images.unsplash.com/photo-1650963310446-011fc6a28367?q=80&w=2232&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D */}
@@ -299,12 +299,11 @@ const WatchFinderPage = () => {
       </section>
 
       {/* Screenshots Section */}
-      <section className="bg-gradient-to-br from-gray-800/5 to-green-800/30 px-6 py-12 sm:px-8 lg:px-12">
+      {/* <section className="bg-gradient-to-br from-gray-800/5 to-green-800/30 px-6 py-12 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-6xl">
           <h2 className="mb-12 text-center text-3xl font-bold text-white">Aperçu du Jeu</h2>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {/* Screenshot placeholders avec mockup réaliste */}
             {[
               { title: 'Menu Principal', desc: 'Interface épurée et intuitive' },
               { title: 'Gameplay', desc: 'Mécaniques de jeu fluides' },
@@ -333,7 +332,7 @@ const WatchFinderPage = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Conclusion + CTA */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-16 sm:px-8 lg:px-12">

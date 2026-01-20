@@ -67,17 +67,23 @@ Relations avec les salles et programmateurs, gestion du booking, des concerts et
 ];
 
 const education: Education[] = [
-  { school: 'Université de Paris', degree: 'Master Informatique', period: '2019 - 2021' },
-  { school: 'Lycée Technique', degree: 'Bac STI2D', period: '2016 - 2019' },
+  { school: 'Webacademie', degree: 'BAC + 2 (titre RNCP 3)', period: '2016 - 2018' },
+  { school: 'Lycée', degree: 'Bac PRO SEN', period: '2015' },
 ];
 
 const projects: Project[] = [
   {
-    name: 'Portfolio Website',
-    description: 'Site web perso développé en Next.js et Tailwind CSS',
-    link: 'https://ryanchoukri.com',
+    name: 'Watch Finder',
+    description:
+      'Application mobile de recommandation de films et séries avec système de swipe intuitif. Développée en React Native avec Redux Toolkit, animations fluides et synchronisation cloud. Optimisée pour 60fps avec 99% crash-free rate.',
+    link: 'https://watch-finder.netlify.app/',
   },
-  { name: 'Weather App', description: 'Application météo en React avec API OpenWeatherMap' },
+  {
+    name: 'Tout Va Bien',
+    description:
+      "Jeu mobile de réflexion et d'énigmes logiques avec 100+ niveaux progressifs. Développé en React Native avec modes de jeu variés, système de récompenses et sauvegarde cloud multi-appareils. Architecture modulaire scalable.",
+    link: 'https://storyteller-clone.netlify.app/',
+  },
 ];
 
 const certifications: Certification[] = [
@@ -319,10 +325,10 @@ const CareerGraph = () => {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900/5 to-purple-900/9">
-      <main className="mx-auto max-w-6xl p-6">
+      <main className="mx-auto max-w-6xl p-4">
         {/* Header */}
         <header className="z-10 text-center">
-          <h1 className="mb-2 h-[67px] text-[17vw] leading-[1] font-bold sm:text-7xl lg:h-full lg:text-8xl lg:leading-[0.8]">
+          <h1 className="mb-2 h-[67px] text-[16vw] leading-[1] font-bold sm:text-7xl lg:h-full lg:text-8xl lg:leading-[0.8]">
             <TextScramble text="RYAN&nbsp;CHOUKRI" />
           </h1>
           <p className="text-sm text-gray-300 sm:text-xl">Frontend & Fullstack Developer</p>
@@ -373,7 +379,7 @@ export default function Home() {
               ))}
             </div>
 
-            <Card>
+            {/* <Card>
               <h2 className="mb-4 border-b border-gray-700 pb-2 text-2xl font-semibold text-white">Achievements</h2>
               <div className="mt-4 flex flex-wrap justify-center gap-4">
                 {achievements.map((ach, idx) => (
@@ -385,7 +391,7 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            </Card>
+            </Card> */}
 
             <h2 className="mt-12 mb-4 border-b border-gray-700 pb-2 text-xl font-semibold sm:text-2xl">Formation</h2>
             {education.map((edu, idx) => (
@@ -398,20 +404,20 @@ export default function Home() {
               </Card>
             ))}
 
-            <h2 className="mt-12 mb-4 border-b border-gray-700 pb-2 text-xl font-semibold sm:text-2xl">Projects</h2>
+            <h2 className="mt-12 mb-4 border-b border-gray-700 pb-2 text-xl font-semibold sm:text-2xl">Projets</h2>
             {projects.map((proj, idx) => (
               <Card key={idx}>
                 <h3 className="text-xl font-semibold">{proj.name}</h3>
                 <p className="mt-2 text-gray-400">{proj.description}</p>
                 {proj.link && (
                   <a href={proj.link} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-blue-400 hover:underline">
-                    View project
+                    Voir le projet
                   </a>
                 )}
               </Card>
             ))}
 
-            <h2 className="mt-12 mb-4 border-b border-gray-700 pb-2 text-xl font-semibold sm:text-2xl">Certifications</h2>
+            {/* <h2 className="mt-12 mb-4 border-b border-gray-700 pb-2 text-xl font-semibold sm:text-2xl">Certifications</h2>
             {certifications.map((cert, idx) => (
               <Card key={idx}>
                 <h3 className="text-xl font-semibold">{cert.name}</h3>
@@ -419,7 +425,7 @@ export default function Home() {
                   {cert.issuer} - {cert.year}
                 </p>
               </Card>
-            ))}
+            ))} */}
           </section>
 
           {/* Right column */}

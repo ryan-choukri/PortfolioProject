@@ -51,6 +51,12 @@ export const SIDEBAR_DATA = [
     path: 'bpmcounter',
     icon: <MusicIcon />,
   },
+  // {
+  //   id: 10,
+  //   name: 'Guitare',
+  //   path: 'guitareview',
+  //   icon: <MusicIcon />,
+  // },
   {
     id: 8,
     name: 'Contact',
