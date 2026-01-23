@@ -21,8 +21,14 @@ const experiencesDev: Experience[] = [
     company: 'Assoconnect',
     role: 'Développeur Full Stack',
     period: 'Avril 2020 - Février 2023',
-    description: `Développement d’applications React et Next.js avec un fort focus sur l’UI/UX et la performance.`,
+    description: `Développement d’applications web avec React.js et Next.js, avec un fort focus sur l’UI/UX et la performance.\n
+Debug, réduction de la dette technique et structuration des composants.\n
+Optimisation des performances front-end (code splitting, lazy loading, Core Web Vitals).\n
+Mise en place de pipelines CI/CD via Azure DevOps pour automatiser builds, tests et déploiements.\n
+Collaboration transverse avec les équipes produit et back-end pour des livraisons itératives et fiables.\n
+Mise en place de tests automatisés (React Testing Library et Cypress).`,
   },
+
   {
     company: 'Fastory',
     role: 'Développeur Full Stack',
@@ -49,7 +55,7 @@ const experiencesVie: Experience[] = [
     role: 'Bassiste Chanteur Compositeur',
     period: 'Jan 2024 - Now',
     description: `Création d’un groupe de rock/punk.
-Composition et enregistrement de morceaux, organisation du travail en groupe.
+Composition et enregistrement de morceaux, organisation du travail en groupe. Creation de l'identité visuelle et présence en ligne.
 Relations avec les salles et programmateurs, gestion du booking, des concerts et des tournées.`,
   },
   {
@@ -353,7 +359,11 @@ export default function Home() {
                       <span className="text-sm">{exp.period}</span>
                     </div>
                     <h3 className="mt-1 text-xl font-semibold">{exp.role}</h3>
-                    <p className="mt-2 text-gray-400">{exp.description}</p>
+                    <p className="mt-2 text-gray-400">
+                      {exp.description.split('\n').map((line, index) => (
+                        <p key={index}>{line}</p>
+                      ))}
+                    </p>
                   </Card>
                 </div>
               ))}
