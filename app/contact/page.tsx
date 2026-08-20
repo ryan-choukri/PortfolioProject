@@ -18,7 +18,6 @@ const Contact = () => {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -31,7 +30,8 @@ const Contact = () => {
     setStatus('idle');
 
     try {
-      const response = await fetch('https://eonluyri7xagh3q.m.pipedream.net', {
+      console.log('Form data to be sent:', formData);
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
