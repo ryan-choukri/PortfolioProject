@@ -26,8 +26,8 @@ const Contact = () => {
       return;
     }
 
-    setLoading(true);
     setStatus('idle');
+    setLoading(true);
 
     try {
       console.log('Form data to be sent:', formData);
