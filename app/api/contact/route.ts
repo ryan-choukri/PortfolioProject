@@ -15,7 +15,6 @@ export async function POST(request: Request) {
     if (!name || !email || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
-    console.log(process.env);
     const apiKey = process.env.RESEND_API_KEY;
 
     if (!apiKey) {
