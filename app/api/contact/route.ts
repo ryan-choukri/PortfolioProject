@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       //     return NextResponse.json({ success: true, devFallback: true }, { status: 200 });
       //   }
 
-      return NextResponse.json({ error: 'Missing RESEND_API_KEY' }, { status: 500 });
+      return NextResponse.json({ error: 'Missing RESEND_API_KEY v2 ' }, { status: 500 });
     }
 
     const resend = new Resend(apiKey);

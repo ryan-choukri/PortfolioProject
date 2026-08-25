@@ -90,6 +90,11 @@ const projects: Project[] = [
       "Jeu mobile de réflexion et d'énigmes logiques avec 100+ niveaux progressifs. Développé en React Native avec modes de jeu variés, système de récompenses et sauvegarde cloud multi-appareils. Architecture modulaire scalable.",
     link: 'https://storyteller-clone.netlify.app/',
   },
+  {
+    name: 'Projet BarberShop',
+    description: "Application web pour la gestion d'un salon de coiffure. Création d'un système de template pour créer des sites de barbershop personnalisés",
+    link: 'https://thefrenchebarber.netlify.app/barber-240',
+  },
 ];
 
 const certifications: Certification[] = [

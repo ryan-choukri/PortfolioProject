@@ -26,7 +26,7 @@ const SidebarItems = ({ $displaySidebar }: SidebarItemsProps) => {
             </>
           ) : null}
 
-          {index === 3 ? (
+          {index === 4 ? (
             <>
               <hr className="sidebar-separator" />
               <p className={'pt-2 text-center text-xs font-light !text-gray-400 ' + (!$displaySidebar ? 'text-[10px]' : '')}>

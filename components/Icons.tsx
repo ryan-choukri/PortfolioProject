@@ -20,6 +20,8 @@ import InputOutlinedIcon from '@mui/icons-material/InputOutlined';
 import ArrowRightOutlinedIcon from '@mui/icons-material/ArrowRightOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+
 export {
   TvOutlinedIcon,
   SportsEsportsOutlinedIcon as GamesIcon,
@@ -42,4 +44,5 @@ export {
   ArrowBackIcon,
   ArrowRightOutlinedIcon as ArrowIcon,
   EmailOutlinedIcon as ContactIcon,
+  ContentCutIcon as CutIcon,
 };
