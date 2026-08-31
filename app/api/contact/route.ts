@@ -18,22 +18,13 @@ export async function POST(request: Request) {
     const apiKey = process.env.RESEND_API_KEY;
 
     if (!apiKey) {
-      //   if (process.env.NODE_ENV !== 'production') {
-      //     console.warn('RESEND_API_KEY is missing. Skipping email send in development.', {
-      //       name,
-      //       email,
-      //       message,
-      //     });
-      //     return NextResponse.json({ success: true, devFallback: true }, { status: 200 });
-      //   }
-
-      return NextResponse.json({ error: 'Missing RESEND_API_KEY v2 ' }, { status: 500 });
+      return NextResponse.json({ error: 'Missing RESEND_API_KEY error : 4847373' }, { status: 500 });
     }
 
     const resend = new Resend(apiKey);
 
     const { error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'contact@ryan-choukri.fr',
       to: 'ryanchourkri@gmail.com',
       subject: `Nouveau message de ${name}`,
       html: `

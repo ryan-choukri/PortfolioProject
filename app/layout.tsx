@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Bebas_Neue, Oswald } from 'next/font/google';
+// disable global styles for alterantive design
 import './globals.css';
+import { useAlternative } from './SELECTTEMPLATE';
+
 import Sidebar from '@/components/Sidebar';
 import { Waves } from '@/components/ui/wave-background';
 
@@ -42,14 +45,20 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${oswaldMono.variable} touch-none antialiased`}>
-        <div>
-          {/* Sidebar fixe à gauche */}
-          <Sidebar>
-            {/* Contenu principal */}
-            <main className="flex-1 p-0">{children}</main>
-          </Sidebar>
-        </div>
-        <Waves className="h-full w-full" />
+        {useAlternative ? (
+          <>{children}</>
+        ) : (
+          <>
+            <div>
+              {/* Sidebar fixe à gauche */}
+              <Sidebar>
+                {/* Contenu principal */}
+                <main className="flex-1 p-0">{children}</main>
+              </Sidebar>
+            </div>
+            <Waves className="h-full w-full" />
+          </>
+        )}
       </body>
     </html>
   );
