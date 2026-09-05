@@ -168,7 +168,7 @@ export default function HomeAlternative() {
       ref={desktopRef}
       tabIndex={-1}
       data-crt={crtEnabled ? 'on' : 'off'}
-      className={`${instrumentSans.variable} alternative-page font-display relative isolate h-dvh w-full overflow-x-hidden overflow-y-auto bg-neutral-800 bg-cover bg-center md:overflow-hidden`}
+      className={`${instrumentSans.variable} alternative-page font-display relative isolate h-dvh w-full overflow-hidden bg-neutral-800 bg-cover bg-center`}
       style={{ backgroundImage: `url(${wallpaperUrl})` }}
       onPointerDown={(event) => {
         if (event.target === event.currentTarget) setSelected(null);
@@ -192,7 +192,7 @@ export default function HomeAlternative() {
           </p>
         </header>
 
-        <div ref={mobileDesktopRef} className={isMobile ? 'relative mb-28 w-full' : 'contents'} style={isMobile ? { height: MOBILE_ROWS * 128 } : undefined}>
+        <div ref={mobileDesktopRef} className={isMobile ? 'relative w-full' : 'contents'} style={isMobile ? { height: MOBILE_ROWS * 128 } : undefined}>
           {desktopItems.map((item) => {
             const pos = isMobile ? (mobilePositions[item.id] ?? defaultMobilePositions[item.id]) : (positions[item.id] ?? item.pos);
             return (

@@ -55,6 +55,12 @@ const moveToward = (value: number, target: number, amount: number) => {
   return Math.max(value - amount, target);
 };
 
+const wrapHorizontally = (x: number, width: number) => {
+  if (x <= -width) return window.innerWidth;
+  if (x >= window.innerWidth) return -width;
+  return x;
+};
+
 const isTypingTarget = (target: EventTarget | null) => target instanceof Element && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
 
 const getAction = (event: KeyboardEvent): Action | null => {
@@ -362,7 +368,7 @@ export function PixelSpider({ active }: { active: boolean }) {
 
         plane.vx = moveToward(plane.vx, targetSpeed, 620 * delta);
         plane.vy = moveToward(plane.vy, targetVerticalSpeed, 520 * delta);
-        plane.x = Math.min(Math.max(4, plane.x + plane.vx * delta), Math.max(4, window.innerWidth - PLANE_WIDTH - 4));
+        plane.x = wrapHorizontally(plane.x + plane.vx * delta, PLANE_WIDTH);
         plane.y = Math.min(Math.max(48, plane.y + plane.vy * delta), Math.max(48, window.innerHeight - PLANE_HEIGHT - 64));
 
         player.x = plane.x + (PLANE_WIDTH - HERO_WIDTH) / 2;
@@ -396,8 +402,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       }
 
       const previousBottom = player.y + HERO_HEIGHT;
-      const nextX = Math.min(Math.max(4, player.x + player.vx * delta), Math.max(4, window.innerWidth - HERO_WIDTH - 4));
-      if (nextX === 4 || nextX === window.innerWidth - HERO_WIDTH - 4) player.vx = 0;
+      const nextX = wrapHorizontally(player.x + player.vx * delta, HERO_WIDTH);
 
       player.vy = Math.min(player.vy + GRAVITY * delta, MAX_FALL_SPEED);
       if (!player.grounded && keys.has('down') && player.vy > -120) {
