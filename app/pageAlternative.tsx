@@ -7,6 +7,7 @@ import { DesktopArtwork } from '@/components/desktop/DesktopArtwork';
 import { Dock } from '@/components/desktop/Dock';
 import { MenuBar } from '@/components/desktop/MenuBar';
 import { OSWindow } from '@/components/desktop/OSWindow';
+import { PixelSpider } from '@/components/desktop/PixelSpider';
 import { WindowContent } from '@/components/desktop/WindowContent';
 import { PageLoader } from '@/components/desktop/PageLoader';
 import { desktopItems, profile, windowItems } from '@/data/portfolio';
@@ -236,6 +237,7 @@ export default function HomeAlternative() {
           </OSWindow>
         ))}
         <Dock onToggle={wm.toggle} openIds={wm.windows.map((window) => window.id)} />
+        <PixelSpider active={!isBooting} />
         {crtEnabled && <div className="crt-overlay" aria-hidden="true" />}
       </div>
       {isBooting && <PageLoader ready={preferencesReady} onComplete={finishBoot} />}

@@ -57,6 +57,7 @@ export function DesktopIcon({ title, artwork, selected, onSelect, onOpen, onDoub
       style={style}
       aria-label={title}
       aria-pressed={selected}
+      data-selected={selected}
       onClick={() => {
         if (suppressClick.current) return;
         onSelect();
@@ -86,9 +87,9 @@ export function DesktopIcon({ title, artwork, selected, onSelect, onOpen, onDoub
           onOpen();
         }
       }}
-      className={`desktop-icon group flex w-[104px] flex-col items-center gap-2 rounded-lg p-2 text-center transition-colors select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-        selected ? 'bg-desktop-ink/20' : 'hover:bg-desktop-ink/10'
-      } ${onDragBy ? 'cursor-grab touch-none active:cursor-grabbing' : 'cursor-pointer'} ${className ?? ''}`}
+      className={`desktop-icon group flex w-[104px] flex-col items-center gap-2 rounded-lg p-2 text-center select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+        onDragBy ? 'cursor-grab touch-none active:cursor-grabbing' : 'cursor-pointer'
+      } ${className ?? ''}`}
     >
       {artwork}
       <span className="text-desktop-ink w-full text-xs leading-tight font-medium break-words drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">{title}</span>
