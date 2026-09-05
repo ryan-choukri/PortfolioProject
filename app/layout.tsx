@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Bebas_Neue, Oswald } from 'next/font/google';
 // disable global styles for alterantive design
-import './globals.css';
+// import './globals.css';
 import { useAlternative } from './SELECTTEMPLATE';
 
 import Sidebar from '@/components/Sidebar';
@@ -31,7 +31,7 @@ const oswaldMono = Oswald({
 
 export const metadata: Metadata = {
   title: 'Ryan Choukri | Développeur Fullstack',
-  description: 'Portfolio de Ryan Choukri, développeur fullstack spécialisé en React',
+  description: 'Ryan Choukri, développeur Full Stack · Product & Automation. Plus de 5 ans d’expérience en startup et SaaS : React, Next.js, UI/UX, IA et automatisation.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -44,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${oswaldMono.variable} touch-none antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${oswaldMono.variable} ${useAlternative ? '' : 'touch-none'} antialiased`}>
         {useAlternative ? (
           <>{children}</>
         ) : (

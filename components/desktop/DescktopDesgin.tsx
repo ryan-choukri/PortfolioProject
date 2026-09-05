@@ -1,32 +1,42 @@
-import { useRef } from 'react';
+import { useRef, type ReactNode } from 'react';
 
 type Props = {
   title: string;
-  image: string;
+  artwork: ReactNode;
   selected: boolean;
   onSelect: () => void;
   onOpen: () => void;
+  onDoubleActivate?: () => void;
+  openOnSingleClick?: boolean;
   onDragBy?: (dx: number, dy: number) => void;
   style?: React.CSSProperties;
   className?: string;
 };
 
-export function DesktopIcon({ title, image, selected, onSelect, onOpen, onDragBy, style, className }: Props) {
-  const drag = useRef<{ startX: number; startY: number; moved: boolean } | null>(null);
+export function DesktopIcon({ title, artwork, selected, onSelect, onOpen, onDoubleActivate, openOnSingleClick = false, onDragBy, style, className }: Props) {
+  const drag = useRef<{ pointerId: number; startX: number; startY: number; threshold: number; moved: boolean } | null>(null);
+  const pointerType = useRef('mouse');
+  const suppressClick = useRef(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!onDragBy || e.pointerType === 'touch') return;
-    if (e.button !== 0) return;
-    drag.current = { startX: e.clientX, startY: e.clientY, moved: false };
+    if (!e.isPrimary || e.button !== 0 || drag.current) return;
+    pointerType.current = e.pointerType;
+    suppressClick.current = false;
+    if (!onDragBy) return;
+    drag.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, threshold: e.pointerType === 'touch' ? 8 : 4, moved: false };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
     const d = drag.current;
-    if (!d) return;
+    if (!d || d.pointerId !== e.pointerId) return;
     const dx = e.clientX - d.startX;
     const dy = e.clientY - d.startY;
-    if (!d.moved && Math.hypot(dx, dy) > 4) d.moved = true;
+    if (!d.moved && Math.hypot(dx, dy) > d.threshold) {
+      d.moved = true;
+      suppressClick.current = true;
+      onSelect();
+    }
     if (d.moved) {
       onDragBy?.(dx, dy);
       d.startX = e.clientX;
@@ -35,38 +45,53 @@ export function DesktopIcon({ title, image, selected, onSelect, onOpen, onDragBy
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
-    const wasMoved = drag.current?.moved;
+    if (!drag.current || drag.current.pointerId !== e.pointerId) return;
+    suppressClick.current = drag.current.moved;
     drag.current = null;
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    if (!wasMoved) onSelect();
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
   return (
     <button
       type="button"
       style={style}
-      onClick={onDragBy ? undefined : onSelect}
+      aria-label={title}
+      aria-pressed={selected}
+      onClick={() => {
+        if (suppressClick.current) return;
+        onSelect();
+        onOpen();
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      onPointerCancel={() => (drag.current = null)}
-      onDoubleClick={onOpen}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') onOpen();
+      onPointerCancel={(e) => {
+        if (drag.current?.pointerId !== e.pointerId) return;
+        suppressClick.current = true;
+        drag.current = null;
       }}
-      className={`group flex w-24 touch-none flex-col items-center gap-1.5 rounded-lg p-1.5 text-center transition-colors ${
+      onLostPointerCapture={(e) => {
+        if (drag.current?.pointerId !== e.pointerId) return;
+        suppressClick.current = true;
+        drag.current = null;
+      }}
+      onDragStart={(e) => e.preventDefault()}
+      onDoubleClick={() => {
+        if (!openOnSingleClick && pointerType.current !== 'touch' && !suppressClick.current) onDoubleActivate?.();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          suppressClick.current = false;
+          onOpen();
+        }
+      }}
+      className={`desktop-icon group flex w-[104px] flex-col items-center gap-2 rounded-lg p-2 text-center transition-colors select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
         selected ? 'bg-desktop-ink/20' : 'hover:bg-desktop-ink/10'
-      } ${onDragBy ? 'cursor-grab active:cursor-grabbing' : ''} ${className ?? ''}`}>
-      <img
-        src={image}
-        alt=""
-        loading="lazy"
-        width={160}
-        height={107}
-        draggable={false}
-        className="h-12 w-[72px] rounded-md object-cover shadow-[var(--shadow-icon)] ring-1 ring-white/40 transition-transform duration-200 group-hover:-translate-y-0.5"
-      />
-      <span className="text-desktop-ink w-full text-[11px] leading-tight break-words drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">{title}</span>
+      } ${onDragBy ? 'cursor-grab touch-none active:cursor-grabbing' : 'cursor-pointer'} ${className ?? ''}`}
+    >
+      {artwork}
+      <span className="text-desktop-ink w-full text-xs leading-tight font-medium break-words drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">{title}</span>
     </button>
   );
 }

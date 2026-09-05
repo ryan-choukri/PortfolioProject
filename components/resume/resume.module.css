@@ -1,0 +1,153 @@
+.page {
+  min-height: 100dvh;
+  padding: 24px 16px 48px;
+  background: radial-gradient(ellipse at 50% 0%, oklch(0.26 0.06 260), transparent 55%), oklch(0.14 0.03 264);
+  color: oklch(0.96 0.01 255);
+  color-scheme: dark;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto 24px;
+  font-size: 12px;
+  color: oklch(0.8 0.025 255);
+}
+
+.navigation a,
+.fileInfo a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pageCard {
+  max-width: 960px;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid oklch(1 0 0 / 0.12);
+  border-radius: 22px;
+  background: oklch(0.17 0.032 264);
+  box-shadow: 0 24px 80px oklch(0 0 0 / 0.22);
+}
+
+.document {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 36px);
+  color: oklch(0.96 0.01 255);
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: oklch(0.76 0.09 255);
+}
+
+.header :is(h1, h2) {
+  font-size: clamp(28px, 5vw, 40px);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.role {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: oklch(0.75 0.025 255);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block: 24px;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background 160ms ease;
+}
+
+.primaryAction {
+  background: oklch(0.53 0.21 260);
+  color: oklch(1 0 0);
+}
+
+.primaryAction:hover {
+  background: oklch(0.59 0.21 260);
+}
+
+.secondaryAction {
+  border-color: oklch(1 0 0 / 0.16);
+  color: oklch(0.94 0.01 255);
+}
+
+.secondaryAction:hover {
+  background: oklch(1 0 0 / 0.06);
+}
+
+.fileInfo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: oklch(0.73 0.025 255);
+  font-size: 11px;
+}
+
+.preview {
+  display: block;
+  overflow: hidden;
+  border: 1px solid oklch(1 0 0 / 0.14);
+  border-radius: 10px;
+  background: oklch(0.96 0.008 250);
+}
+
+.preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.page a:focus-visible,
+.document a:focus-visible,
+.primaryAction:focus-visible {
+  outline: 2px solid oklch(0.8 0.12 250);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction {
+    transition: none;
+  }
+}

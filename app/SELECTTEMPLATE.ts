@@ -1,1 +1,1 @@
-export const useAlternative = false; // Change this to false to use HomeBasic
+export const useAlternative = true; // Change this to false to use HomeBasic
