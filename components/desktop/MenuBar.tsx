@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Airplay, Bluetooth, FastForward, Moon, Monitor, Music2, PanelsTopLeft, Play, RadioTower, ScreenShare, SunMedium, Volume2, Wifi, type LucideIcon } from 'lucide-react';
+import { profile } from '@/data/portfolio';
 
 type Props = {
   onOpen: (id: string) => void;
@@ -36,7 +37,10 @@ function SliderCard({ icon: Icon, title, level }: { icon: LucideIcon; title: str
 
 export function MenuBar({ onOpen, crtEnabled, onToggleCrt }: Props) {
   const [time, setTime] = useState<string>('');
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+  const profileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const controlCenterRef = useRef<HTMLDivElement>(null);
   const controlCenterButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -74,11 +78,96 @@ export function MenuBar({ onOpen, crtEnabled, onToggleCrt }: Props) {
     };
   }, [controlCenterOpen]);
 
+  useEffect(() => {
+    if (!profileMenuOpen) return;
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      if (!profileMenuRef.current?.contains(event.target as Node)) setProfileMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setProfileMenuOpen(false);
+      profileMenuButtonRef.current?.focus();
+    };
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [profileMenuOpen]);
+
+  const openFromProfileMenu = (id: string) => {
+    setProfileMenuOpen(false);
+    onOpen(id);
+  };
+
   return (
     <div className="text-desktop-ink fixed inset-x-0 top-0 z-[9999] flex h-7 items-center justify-between gap-4 bg-black/25 px-3 text-[12px] backdrop-blur-md">
       <div className="flex min-w-0 items-center gap-4">
-        <button onClick={() => onOpen('about')} className="shrink-0 cursor-pointer font-semibold tracking-tight">
-          Ryan Choukri
+        <div ref={profileMenuRef} className="relative flex shrink-0 items-center">
+          <button
+            ref={profileMenuButtonRef}
+            type="button"
+            aria-expanded={profileMenuOpen}
+            aria-controls="desktop-profile-menu"
+            onClick={() => {
+              setControlCenterOpen(false);
+              setProfileMenuOpen((open) => !open);
+            }}
+            className="profile-menu-trigger cursor-pointer font-semibold tracking-tight"
+          >
+            Ryan Choukri
+          </button>
+
+          {profileMenuOpen && (
+            <section id="desktop-profile-menu" aria-label="Informations sur Ryan Choukri" className="profile-menu-panel">
+              <dl className="profile-menu-details">
+                <div>
+                  <dt>Nom</dt>
+                  <dd>{profile.name}</dd>
+                </div>
+                <div>
+                  <dt>Âge</dt>
+                  <dd>29 ans</dd>
+                </div>
+                <div>
+                  <dt>Métier</dt>
+                  <dd>Développeur Full Stack</dd>
+                </div>
+                <div>
+                  <dt>Spécialité</dt>
+                  <dd>Produit, IA & automatisation</dd>
+                </div>
+                <div>
+                  <dt>Expérience</dt>
+                  <dd>Plus de 5 ans</dd>
+                </div>
+                <div>
+                  <dt>Localisation</dt>
+                  <dd>{profile.location}</dd>
+                </div>
+                <div>
+                  <dt>E-mail</dt>
+                  <dd>{profile.email}</dd>
+                </div>
+              </dl>
+
+              <nav className="profile-menu-actions" aria-label="Raccourcis personnels">
+                <button type="button" onClick={() => openFromProfileMenu('about')}>
+                  Ouvrir ma présentation <span aria-hidden="true">›</span>
+                </button>
+                <button type="button" onClick={() => openFromProfileMenu('contact')}>
+                  Me contacter <span aria-hidden="true">›</span>
+                </button>
+                <button type="button" onClick={() => openFromProfileMenu('cv')}>
+                  Voir mon CV <span aria-hidden="true">›</span>
+                </button>
+              </nav>
+            </section>
+          )}
+        </div>
+        <button onClick={() => onOpen('about')} className="hidden cursor-pointer opacity-80 hover:opacity-100 sm:inline">
+          À propos
         </button>
         <button onClick={() => onOpen('projects')} className="hidden cursor-pointer opacity-80 hover:opacity-100 sm:inline">
           Projets
@@ -114,7 +203,10 @@ export function MenuBar({ onOpen, crtEnabled, onToggleCrt }: Props) {
             aria-expanded={controlCenterOpen}
             aria-controls="desktop-control-center"
             title="Centre de contrôle"
-            onClick={() => setControlCenterOpen((open) => !open)}
+            onClick={() => {
+              setProfileMenuOpen(false);
+              setControlCenterOpen((open) => !open);
+            }}
             className="control-center-trigger"
           >
             <span className="control-center-mark" aria-hidden="true">

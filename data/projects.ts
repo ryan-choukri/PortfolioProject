@@ -52,7 +52,7 @@ export const atelierDouglas = {
   ],
   conclusion: 'Ce projet m’a permis de travailler sur l’ensemble de la chaîne d’un produit digital : conception, développement, infrastructure, automatisation et acquisition commerciale.',
   href: 'https://atelierdouglas.fr/',
-  pos: { x: 69, y: 68 },
+  pos: { x: 74, y: 14 },
 } satisfies Project;
 
 // Contenus et liens repris du portfolio existant. Les visuels restent locaux.
@@ -76,7 +76,7 @@ export const projects: Project[] = [
       'Gestion des préférences et synchronisation des données.',
     ],
     href: 'https://watch-finder.netlify.app/',
-    pos: { x: 69, y: 17 },
+    pos: { x: 85, y: 36 },
   },
   {
     id: 'tout-va-bien',
@@ -90,7 +90,7 @@ export const projects: Project[] = [
     tags: ['React Native', 'Jeu de réflexion', 'UX mobile'],
     highlights: ['Énigmes logiques avec une difficulté progressive.', 'Plusieurs modes de jeu et un système de récompenses.', 'Sauvegarde de la progression entre les appareils.'],
     href: 'https://storyteller-clone.netlify.app/',
-    pos: { x: 84, y: 17 },
+    pos: { x: 83, y: 15 },
   },
   {
     id: 'barbershop',
@@ -108,7 +108,7 @@ export const projects: Project[] = [
       'Parcours de prise de rendez-vous et adaptation aux différents écrans.',
     ],
     href: 'https://thefrenchebarber.netlify.app/barber-240',
-    pos: { x: 69, y: 43 },
+    pos: { x: 76, y: 31 },
   },
   atelierDouglas,
 ];

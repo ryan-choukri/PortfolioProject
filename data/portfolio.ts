@@ -121,11 +121,11 @@ const projectTones: Record<string, DesktopItem['tone']> = {
 };
 
 export const desktopItems: DesktopItem[] = [
-  { id: 'about', title: 'À propos', subtitle: 'Présentation', symbol: 'user', tone: 'amber', pos: { x: 3, y: 17 } },
-  { id: 'experience', title: 'Parcours', subtitle: 'Expériences & formation', symbol: 'briefcase', tone: 'violet', pos: { x: 3, y: 40 } },
-  { id: 'projects', title: 'Mes projets', subtitle: 'Une sélection de réalisations', symbol: 'folder', tone: 'blue', pos: { x: 3, y: 63 } },
-  { id: 'contact', title: 'Contact', subtitle: 'Discutons ensemble', symbol: 'mail', tone: 'red', pos: { x: 18, y: 40 } },
-  { id: 'cv', title: 'Mon CV', subtitle: 'CV 2026 · PDF', symbol: 'file', tone: 'rose', pos: { x: 18, y: 63 } },
+  { id: 'about', title: 'À propos', subtitle: 'Présentation', symbol: 'user', tone: 'amber', pos: { x: 10, y: 17 } },
+  { id: 'experience', title: 'Parcours', subtitle: 'Expériences & formation', symbol: 'briefcase', tone: 'violet', pos: { x: 9, y: 36 } },
+  { id: 'projects', title: 'Mes projets', subtitle: 'Une sélection de réalisations', symbol: 'folder', tone: 'blue', pos: { x: 9, y: 55 } },
+  { id: 'contact', title: 'Contact', subtitle: 'Discutons ensemble', symbol: 'mail', tone: 'red', pos: { x: 18, y: 55 } },
+  { id: 'cv', title: 'Mon CV', subtitle: 'CV 2026 · PDF', symbol: 'file', tone: 'rose', pos: { x: 18, y: 36 } },
   ...projects.map((project): DesktopItem => ({
     id: project.id,
     title: project.title,
@@ -135,7 +135,7 @@ export const desktopItems: DesktopItem[] = [
     image: project.image.src,
     pos: project.pos,
   })),
-  { id: 'lab', title: 'Laboratoire', subtitle: 'Petites expériences', symbol: 'flask', tone: 'green', pos: { x: 84, y: 43 } },
+  { id: 'lab', title: 'Laboratoire', subtitle: 'Petites expériences', symbol: 'flask', tone: 'green', pos: { x: 89, y: 55 } },
 ];
 
 export const utilityItems: DesktopItem[] = [

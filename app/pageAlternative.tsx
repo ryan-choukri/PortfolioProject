@@ -18,16 +18,25 @@ import './pageAlternative.css';
 
 const instrumentSans = Instrument_Sans({ subsets: ['latin'], variable: '--font-instrument-sans', display: 'swap' });
 type Pos = { x: number; y: number };
-const POSITIONS_KEY = 'ryan-choukri-desktop-positions-v1';
-const MOBILE_POSITIONS_KEY = 'ryan-choukri-mobile-positions-v1';
+const POSITIONS_KEY = 'ryan-choukri-desktop-positions-v2';
+const MOBILE_POSITIONS_KEY = 'ryan-choukri-mobile-positions-v3';
 const CRT_KEY = 'ryan-choukri-crt-enabled';
 const defaultPositions: Record<string, Pos> = Object.fromEntries(desktopItems.map((item) => [item.id, item.pos]));
 const MOBILE_ICON_WIDTH = 96;
 const MOBILE_ICON_HEIGHT = 112;
 const MOBILE_ROWS = Math.ceil(desktopItems.length / 3);
-const defaultMobilePositions: Record<string, Pos> = Object.fromEntries(
-  desktopItems.map((item, index) => [item.id, { x: (index % 3) * 50, y: MOBILE_ROWS > 1 ? (Math.floor(index / 3) / (MOBILE_ROWS - 1)) * 100 : 0 }])
-);
+const defaultMobilePositions: Record<string, Pos> = {
+  about: { x: 100, y: -43 },
+  projects: { x: 0, y: -3 },
+  experience: { x: 50, y: -3 },
+  cv: { x: 100, y: -3 },
+  'watch-finder': { x: 0, y: 25 },
+  barbershop: { x: 50, y: 25 },
+  contact: { x: 100, y: 25 },
+  'tout-va-bien': { x: 0, y: 53 },
+  atelier: { x: 50, y: 53 },
+  lab: { x: 100, y: 53 },
+};
 
 function loadPositions(key: string, defaults: Record<string, Pos>, allowAboveOrigin = false): Record<string, Pos> {
   const positions = { ...defaults };
@@ -237,7 +246,7 @@ export default function HomeAlternative() {
           </OSWindow>
         ))}
         <Dock onToggle={wm.toggle} openIds={wm.windows.map((window) => window.id)} />
-        <PixelSpider active={!isBooting} />
+        {!isMobile && <PixelSpider active={!isBooting} />}
         {crtEnabled && <div className="crt-overlay" aria-hidden="true" />}
       </div>
       {isBooting && <PageLoader ready={preferencesReady} onComplete={finishBoot} />}

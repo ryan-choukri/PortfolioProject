@@ -66,6 +66,7 @@ export function OSWindow({ state, title, isMobile, children, onBack, backTitle, 
       aria-label={title}
       onPointerDown={onFocus}
       style={frameStyle}
+      data-fullscreen={fullscreen ? 'true' : 'false'}
       className={`os-window bg-window text-window-foreground ring-border fixed flex flex-col overflow-hidden rounded-xl shadow-[var(--shadow-window)] ring-1 transition-[opacity,transform] duration-200 ${
         mounted ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
       }`}
@@ -100,7 +101,9 @@ export function OSWindow({ state, title, isMobile, children, onBack, backTitle, 
         <span className="min-w-0 truncate pl-2 text-xs font-medium opacity-80">{title}</span>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="os-window__content">{children}</div>
+      </div>
 
       {!fullscreen && (
         <div
