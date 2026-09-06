@@ -18,6 +18,10 @@ const PLANE_HEIGHT = 48;
 const PLANE_SURFACE = 4;
 const PLANE_CRUISE_SPEED = 145;
 const PLANE_MAX_SPEED = 260;
+const PLANE_ROCKET_SPEED = 560;
+const PLANE_ROCKET_CHARGE_TIME = 3;
+const PLANE_DOUBLE_ROCKET_TIME = 6;
+const PLANE_DOUBLE_ROCKET_SPEED = PLANE_ROCKET_SPEED * 2;
 const PLANE_VERTICAL_SPEED = 150;
 const PLANE_RESPAWN_DELAY = 2_200;
 const PLATFORM_HINT_DELAY = 2_000;
@@ -27,6 +31,7 @@ type Motion = 'idle' | 'walk' | 'jump' | 'fall' | 'ride';
 type Action = 'left' | 'right' | 'up' | 'down' | 'action';
 type Direction = 'left' | 'right';
 type PlanePhase = 'ready' | 'ridden' | 'autopilot' | 'exploded';
+type PlaneMode = 'plane' | 'boosting' | 'rocket';
 
 type Player = {
   x: number;
@@ -123,6 +128,16 @@ function PlaneSprite() {
           <i />
           <i />
         </span>
+        <span className="pixel-plane__rocket-trail">
+          <span className="pixel-plane__rocket-smoke">
+            {Array.from({ length: 8 }, (_, index) => (
+              <i key={index} />
+            ))}
+          </span>
+          <span className="pixel-plane__rocket-flame">
+            <i />
+          </span>
+        </span>
         <span className="pixel-plane__pilot">
           <svg viewBox="0 0 8 10" shapeRendering="crispEdges">
             <path fill="#251b25" d="M2 0h4v1h1v5H6v1H2V6H1V1h1V0Z" />
@@ -158,6 +173,26 @@ function PlaneSprite() {
           <path fill="#251b25" d="M13 17h2v2h3v4h-5v-4h1v-2Zm9 1h2v2h3v4h-5v-4h1v-2Z" />
           <path fill="#60748b" d="M14 20h3v2h-3zm9 1h3v2h-3z" />
           <path fill="#b9d1df" d="M15 20h1v1h-1zm9 1h1v1h-1z" />
+        </svg>
+        <svg className="pixel-plane__rocket-sprite" viewBox="0 0 40 24" shapeRendering="crispEdges">
+          <path fill="#251b25" d="M24 6V4h2V2h2V0h4v2h2v4h-4V5h-2v1h-4Zm0 12h4v1h2v-1h4v4h-2v2h-4v-2h-2v-2h-2v-2Z" />
+          <path fill="#d72e3f" d="M26 6V5h2V3h2V2h1v2h2v2h-7Zm0 12h7v3h-2v2h-2v-2h-1v-2h-2v-1Z" />
+
+          <path fill="#251b25" d="M1 10h2V8h3V6h27v2h2v1h3v2h2v4h-2v2h-3v1h-2v2H6v-2H3v-2H1v-6Z" />
+          <path fill="#ef4050" d="M3 10h2V8h27v2h2v1h2v4h-2v1h-2v2H5v-2H3v-6Z" />
+          <path fill="#ff6c67" d="M5 9h27v2H4v-1h1V9Z" />
+          <path fill="#b71f34" d="M4 15h30v1h-2v2H5v-2H4v-1Z" />
+
+          <path fill="#fff2dc" d="M16 8h6v5h-6V8Zm12 0h4v5h-4V8Zm-6 5h6v5h-6v-5Z" />
+          <path fill="#f8d8bb" d="M16 12h6v1h-6v-1Zm12 0h4v1h-4v-1Zm-6 4h6v2h-6v-2Z" />
+
+          <path fill="#251b25" d="M7 8h7v1h2v7h-2v1H7v-1H6V9h1V8Z" />
+          <path fill="#328cc5" d="M8 9h6v1h1v5h-2v1H8v-1H7v-5h1V9Z" />
+          <path fill="#8ed8ef" d="M8 10h4v1H8v-1Z" />
+
+          <path fill="#251b25" d="M34 8h4v2h2v6h-2v2h-4V8Z" />
+          <path fill="#9f2636" d="M35 10h3v1h1v4h-1v1h-3v-6Z" />
+          <path fill="#f7a238" d="M37 11h2v4h-2v-4Z" />
         </svg>
         <span className="pixel-plane__propeller" />
       </span>
@@ -263,6 +298,9 @@ export function PixelSpider({ active }: { active: boolean }) {
     };
     let animationFrame = 0;
     let previousTime = now;
+    let heldDirection = 0;
+    let horizontalHoldTime = 0;
+    let planeMode: PlaneMode = 'plane';
 
     const updateAppearance = (motion: Motion) => {
       if (player.motion !== motion) {
@@ -277,6 +315,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       if (!planeElement) return;
       planeElement.dataset.state = plane.phase;
       planeElement.dataset.direction = plane.direction;
+      planeElement.dataset.mode = planeMode;
       planeElement.style.transform = `translate3d(${Math.round(plane.x)}px, ${Math.round(plane.y)}px, 0)`;
     };
 
@@ -289,6 +328,9 @@ export function PixelSpider({ active }: { active: boolean }) {
       plane.direction = 'left';
       plane.phase = 'ready';
       plane.respawnAt = Infinity;
+      heldDirection = 0;
+      horizontalHoldTime = 0;
+      planeMode = 'plane';
       updatePlaneAppearance();
     };
 
@@ -360,13 +402,31 @@ export function PixelSpider({ active }: { active: boolean }) {
       }
 
       if (plane.phase === 'ridden') {
-        if (input !== 0) plane.direction = input < 0 ? 'left' : 'right';
+        if (input !== 0) {
+          plane.direction = input < 0 ? 'left' : 'right';
+          if (heldDirection === input) {
+            horizontalHoldTime = Math.min(PLANE_DOUBLE_ROCKET_TIME, horizontalHoldTime + delta);
+          } else {
+            heldDirection = input;
+            horizontalHoldTime = 0;
+          }
+        } else {
+          horizontalHoldTime = Math.max(0, horizontalHoldTime - delta * 1.25);
+          if (horizontalHoldTime === 0) heldDirection = 0;
+        }
+
+        const rocketEngaged = planeMode === 'rocket' ? horizontalHoldTime > PLANE_ROCKET_CHARGE_TIME * 0.45 : horizontalHoldTime >= PLANE_ROCKET_CHARGE_TIME;
+        planeMode = rocketEngaged ? 'rocket' : horizontalHoldTime >= PLANE_ROCKET_CHARGE_TIME * 0.3 ? 'boosting' : 'plane';
+
         const direction = plane.direction === 'right' ? 1 : -1;
-        const targetSpeed = input === 0 ? direction * PLANE_CRUISE_SPEED : input * PLANE_MAX_SPEED;
+        const chargeProgress = Math.min(1, horizontalHoldTime / PLANE_ROCKET_CHARGE_TIME);
+        const doubleRocketProgress = Math.min(1, Math.max(0, horizontalHoldTime - PLANE_ROCKET_CHARGE_TIME) / (PLANE_DOUBLE_ROCKET_TIME - PLANE_ROCKET_CHARGE_TIME));
+        const chargedSpeed = PLANE_MAX_SPEED + (PLANE_ROCKET_SPEED - PLANE_MAX_SPEED) * chargeProgress ** 1.8 + (PLANE_DOUBLE_ROCKET_SPEED - PLANE_ROCKET_SPEED) * doubleRocketProgress ** 1.6;
+        const targetSpeed = input === 0 ? direction * (planeMode === 'rocket' ? PLANE_MAX_SPEED : PLANE_CRUISE_SPEED) : input * chargedSpeed;
         const verticalInput = Number(keys.has('down')) - Number(keys.has('up'));
         const targetVerticalSpeed = verticalInput === 0 ? 18 : verticalInput * PLANE_VERTICAL_SPEED;
 
-        plane.vx = moveToward(plane.vx, targetSpeed, 620 * delta);
+        plane.vx = moveToward(plane.vx, targetSpeed, (planeMode === 'rocket' ? 940 : 620) * delta);
         plane.vy = moveToward(plane.vy, targetVerticalSpeed, 520 * delta);
         plane.x = wrapHorizontally(plane.x + plane.vx * delta, PLANE_WIDTH);
         plane.y = Math.min(Math.max(48, plane.y + plane.vy * delta), Math.max(48, window.innerHeight - PLANE_HEIGHT - 64));
@@ -422,6 +482,9 @@ export function PixelSpider({ active }: { active: boolean }) {
             plane.phase = 'ridden';
             plane.vx = 0;
             plane.vy = 0;
+            heldDirection = 0;
+            horizontalHoldTime = 0;
+            planeMode = 'plane';
             player.x = plane.x + (PLANE_WIDTH - HERO_WIDTH) / 2;
             player.y = planeTop - HERO_HEIGHT;
             player.vx = 0;
@@ -483,12 +546,12 @@ export function PixelSpider({ active }: { active: boolean }) {
 
   return (
     <>
-      <div ref={planeRef} className="pixel-plane" data-direction="left" data-state="ready" role="img" aria-label="Petit avion en pixel art sur lequel Spider-Man peut sauter">
+      <div ref={planeRef} className="pixel-plane" data-direction="left" data-state="ready" data-mode="plane" role="img" aria-label="Petit avion en pixel art sur lequel Spider-Man peut sauter">
         <span className="pixel-plane__hint pixel-plane__hint--ready" aria-hidden="true">
           Saute dessus
         </span>
         <span className="pixel-plane__hint pixel-plane__hint--ridden" aria-hidden="true">
-          Espace : éjection
+          Maintiens ← ou → : fusée · espace : éjection
         </span>
         <PlaneSprite />
       </div>
