@@ -605,6 +605,79 @@
 }
 
 /* Petit personnage jouable : le SVG reste net et les membres changent de pose selon le mouvement. */
+.alternative-page .pixel-spider-web {
+  position: fixed;
+  z-index: 9997;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 0;
+  height: 10px;
+  pointer-events: none;
+  transform-origin: left center;
+  will-change: width, transform;
+}
+
+.alternative-page .pixel-spider-web[data-state='pulling'],
+.alternative-page .pixel-spider-web[data-state='hanging'] {
+  display: block;
+}
+
+.alternative-page .pixel-spider-web::before,
+.alternative-page .pixel-spider-web::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  background: #f4fbff;
+  box-shadow:
+    -3px -2px 0 #c5e7f3,
+    3px 2px 0 #f4fbff,
+    5px -2px 0 #9dcbdc;
+  transform: translateY(-50%);
+}
+
+.alternative-page .pixel-spider-web::before {
+  left: -3px;
+}
+
+.alternative-page .pixel-spider-web::after {
+  right: 0;
+}
+
+.alternative-page .pixel-spider-web > svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 10px;
+  overflow: visible;
+  animation: pixel-web-tension 420ms steps(3, end) infinite;
+}
+
+.alternative-page .pixel-spider-web :is(.pixel-spider-web__main, .pixel-spider-web__loose, .pixel-spider-web__links) {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.alternative-page .pixel-spider-web__main {
+  stroke: #f7fcff;
+  stroke-width: 2px;
+}
+
+.alternative-page .pixel-spider-web__loose {
+  stroke: #aad7e7;
+  stroke-width: 1px;
+  stroke-dasharray: 7 3;
+}
+
+.alternative-page .pixel-spider-web__links {
+  stroke: #d9f2fa;
+  stroke-width: 1px;
+  stroke-dasharray: 2 2;
+}
+
 .alternative-page .pixel-plane {
   position: fixed;
   top: 0;
@@ -1115,6 +1188,7 @@
 }
 
 .alternative-page .pixel-spider__body {
+  --pixel-spider-facing: 1;
   position: absolute;
   inset: 0;
   display: block;
@@ -1122,11 +1196,20 @@
 }
 
 .alternative-page .pixel-spider[data-direction='left'] .pixel-spider__body {
+  --pixel-spider-facing: -1;
   transform: scaleX(-1);
 }
 
 .alternative-page .pixel-spider__sprite {
   display: block;
+  width: 32px;
+  height: 48px;
+  overflow: visible;
+  image-rendering: pixelated;
+}
+
+.alternative-page .pixel-spider__hang-sprite {
+  display: none;
   width: 32px;
   height: 48px;
   overflow: visible;
@@ -1262,6 +1345,39 @@
   opacity: 0.62;
 }
 
+.alternative-page .pixel-spider:is([data-motion='web'], [data-motion='hang']) .pixel-spider__shadow {
+  opacity: 0;
+}
+
+.alternative-page .pixel-spider[data-motion='web'] .pixel-spider__body {
+  animation: pixel-spider-web-pull 180ms steps(2, end) infinite;
+}
+
+.alternative-page .pixel-spider[data-motion='web'] .pixel-spider__arm--front {
+  transform: translate(2px, -3px) rotate(-68deg);
+}
+
+.alternative-page .pixel-spider[data-motion='web'] .pixel-spider__arm--back {
+  transform: translate(1px, -2px) rotate(-48deg);
+}
+
+.alternative-page .pixel-spider[data-motion='web'] .pixel-spider__leg--front {
+  transform: translate(-1px, -1px) rotate(24deg);
+}
+
+.alternative-page .pixel-spider[data-motion='web'] .pixel-spider__leg--back {
+  transform: translate(2px, -2px) rotate(-30deg);
+}
+
+.alternative-page .pixel-spider[data-motion='hang'] .pixel-spider__sprite {
+  display: none;
+}
+
+.alternative-page .pixel-spider[data-motion='hang'] .pixel-spider__hang-sprite {
+  display: block;
+  animation: pixel-spider-hang 780ms steps(2, end) infinite;
+}
+
 @keyframes pixel-spider-idle {
   0%,
   100% {
@@ -1331,6 +1447,36 @@
   100% {
     opacity: 0;
     transform: translate(-50%, -4px) scale(0.98);
+  }
+}
+
+@keyframes pixel-web-tension {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(1px) scaleY(0.78);
+  }
+}
+
+@keyframes pixel-spider-web-pull {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg) scaleX(var(--pixel-spider-facing));
+  }
+  50% {
+    transform: translateY(-2px) rotate(3deg) scaleX(var(--pixel-spider-facing));
+  }
+}
+
+@keyframes pixel-spider-hang {
+  0%,
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(1px);
   }
 }
 
@@ -1459,6 +1605,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .alternative-page .pixel-spider-web,
+  .alternative-page .pixel-spider-web *,
+  .alternative-page .desktop-artwork-stage[data-web-target='true']::after,
   .alternative-page .pixel-plane *,
   .alternative-page .pixel-plane *::before,
   .alternative-page .pixel-plane *::after,
