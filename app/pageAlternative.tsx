@@ -67,7 +67,10 @@ export default function HomeAlternative() {
   const [crtEnabled, setCrtEnabled] = useState(false);
   const [preferencesReady, setPreferencesReady] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
+  const [spiderStarted, setSpiderStarted] = useState(false);
   const [spotlightId, setSpotlightId] = useState<string | null>(null);
+
+  const startSpider = useCallback(() => setSpiderStarted(true), []);
 
   const finishBoot = useCallback(() => {
     setIsBooting(false);
@@ -246,10 +249,10 @@ export default function HomeAlternative() {
           </OSWindow>
         ))}
         <Dock onToggle={wm.toggle} openIds={wm.windows.map((window) => window.id)} />
-        {!isMobile && <PixelSpider active={!isBooting} />}
+        {!isMobile && <PixelSpider active={spiderStarted} />}
         {crtEnabled && <div className="crt-overlay" aria-hidden="true" />}
       </div>
-      {isBooting && <PageLoader ready={preferencesReady} onComplete={finishBoot} />}
+      {isBooting && <PageLoader ready={preferencesReady} onReveal={startSpider} onComplete={finishBoot} />}
     </main>
   );
 }

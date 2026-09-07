@@ -6,6 +6,7 @@ import { projects, wallpaperUrl } from '@/data/projects';
 
 type Props = {
   ready: boolean;
+  onReveal: () => void;
   onComplete: () => void;
 };
 
@@ -26,7 +27,7 @@ function preloadImage(src: string) {
   });
 }
 
-export function PageLoader({ ready, onComplete }: Props) {
+export function PageLoader({ ready, onReveal, onComplete }: Props) {
   const [phase, setPhase] = useState<'loading' | 'ready' | 'revealing'>('loading');
   const [progress, setProgress] = useState(0);
 
@@ -74,9 +75,15 @@ export function PageLoader({ ready, onComplete }: Props) {
   useEffect(() => {
     if (phase !== 'ready') return;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const timer = window.setTimeout(() => setPhase('revealing'), reducedMotion ? 0 : 320);
+    const timer = window.setTimeout(
+      () => {
+        onReveal();
+        setPhase('revealing');
+      },
+      reducedMotion ? 0 : 320
+    );
     return () => window.clearTimeout(timer);
-  }, [phase]);
+  }, [onReveal, phase]);
 
   useEffect(() => {
     if (phase !== 'revealing') return;
@@ -153,7 +160,15 @@ export function PageLoader({ ready, onComplete }: Props) {
 
         <footer className="page-loader-footer">
           <span>DU CODE. DES IDÉES. UN PEU DE MOI.</span>
-          <button type="button" onClick={() => setPhase('revealing')} disabled={phase !== 'loading'} className="page-loader-skip">
+          <button
+            type="button"
+            onClick={() => {
+              onReveal();
+              setPhase('revealing');
+            }}
+            disabled={phase !== 'loading'}
+            className="page-loader-skip"
+          >
             Passer l’animation <span aria-hidden="true">↗</span>
           </button>
         </footer>

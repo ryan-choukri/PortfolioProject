@@ -10,6 +10,8 @@ const AIR_ACCELERATION = 1_150;
 const GROUND_FRICTION = 2_300;
 const GRAVITY = 1_500;
 const JUMP_SPEED = 720;
+const DOUBLE_JUMP_SPEED = 680;
+const BACKFLIP_DURATION = 520;
 const MAX_FALL_SPEED = 920;
 const COYOTE_TIME = 120;
 const JUMP_BUFFER = 130;
@@ -29,14 +31,24 @@ const PLATFORM_HINT_DURATION = 7_000;
 const WEB_PULL_MIN_SPEED = 460;
 const WEB_PULL_MAX_SPEED = 1_020;
 const WEB_ARRIVAL_DISTANCE = 6;
+const INTRO_DROP_HEIGHT = 280;
+const INTRO_DROP_SPEED = 80;
+const INTRO_DROP_GRAVITY = 650;
+const INTRO_READY_DURATION = 220;
+const INTRO_LEAP_DURATION = 420;
+const INTRO_WEB_HOLD_DURATION = 780;
+const INTRO_VELOCITY_SCALE = 0.8;
+const INTRO_STOP_SPEED = 8;
+const DOCK_JUMP_DISTANCE = 132;
 
-type Motion = 'idle' | 'walk' | 'jump' | 'fall' | 'ride' | 'web' | 'hang';
+type Motion = 'idle' | 'walk' | 'jump' | 'double-jump' | 'fall' | 'ride' | 'web' | 'hang';
 type Action = 'left' | 'right' | 'up' | 'down' | 'action' | 'web';
 type Direction = 'left' | 'right';
 type PlanePhase = 'ready' | 'ridden' | 'autopilot' | 'exploded';
 type PlaneMode = 'plane' | 'boosting' | 'rocket';
 type WebPhase = 'idle' | 'pulling' | 'hanging';
 type WebSide = 'top' | 'right' | 'bottom' | 'left';
+type IntroPhase = 'drop' | 'ready' | 'leap' | 'swing' | 'coast' | 'walk' | 'return-jump' | 'done';
 
 type Player = {
   x: number;
@@ -48,6 +60,8 @@ type Player = {
   motion: Motion;
   lastGroundedAt: number;
   jumpRequestedAt: number;
+  jumpCount: number;
+  backflipUntil: number;
 };
 
 type Plane = {
@@ -65,6 +79,12 @@ type WebConnection = {
   target: HTMLElement | null;
   side: WebSide;
   offset: number;
+};
+
+type IntroSequence = {
+  phase: IntroPhase;
+  phaseStartedAt: number;
+  returnDirection: Direction | null;
 };
 
 const moveToward = (value: number, target: number, amount: number) => {
@@ -242,10 +262,11 @@ export function PixelSpider({ active }: { active: boolean }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
   const webRef = useRef<HTMLSpanElement>(null);
+  const [introRunning, setIntroRunning] = useState(true);
   const [platformHintPhase, setPlatformHintPhase] = useState<'waiting' | 'visible' | 'done'>('waiting');
 
   useEffect(() => {
-    if (!active) return;
+    if (!active || introRunning) return;
 
     const movementKeys = new Set<Action>();
     let revealTimer = 0;
@@ -292,7 +313,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       window.removeEventListener('keyup', pauseHintTimer);
       window.removeEventListener('blur', cancelHintTimer);
     };
-  }, [active]);
+  }, [active, introRunning]);
 
   useEffect(() => {
     if (!active) return;
@@ -305,18 +326,27 @@ export function PixelSpider({ active }: { active: boolean }) {
     const keys = new Set<Action>();
     const now = performance.now();
     const dockRect = document.querySelector<HTMLElement>('.desktop-dock')?.getBoundingClientRect();
-    const startingX = dockRect ? dockRect.left + 18 : window.innerWidth / 2 - HERO_WIDTH / 2;
-    const startingY = dockRect ? dockRect.top - HERO_HEIGHT - 44 : 64;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const startingX = dockRect ? dockRect.left + dockRect.width / 2 - HERO_WIDTH / 2 : window.innerWidth / 2 - HERO_WIDTH / 2;
+    const dockSurfaceY = dockRect ? dockRect.top - HERO_HEIGHT + 3 : window.innerHeight - HERO_HEIGHT - 72;
+    const startingY = reducedMotion ? dockSurfaceY : dockSurfaceY - INTRO_DROP_HEIGHT;
     const player: Player = {
       x: Math.max(12, Math.min(startingX, window.innerWidth - HERO_WIDTH - 12)),
       y: Math.max(34, startingY),
       vx: 0,
-      vy: 0,
-      grounded: false,
+      vy: reducedMotion ? 0 : INTRO_DROP_SPEED,
+      grounded: reducedMotion,
       direction: 'right',
-      motion: 'fall',
-      lastGroundedAt: now,
+      motion: reducedMotion ? 'idle' : 'fall',
+      lastGroundedAt: reducedMotion ? now : -Infinity,
       jumpRequestedAt: -Infinity,
+      jumpCount: 0,
+      backflipUntil: -Infinity,
+    };
+    const intro: IntroSequence = {
+      phase: reducedMotion ? 'done' : 'drop',
+      phaseStartedAt: now,
+      returnDirection: null,
     };
     const getPlaneSpawn = () => ({
       x: Math.max(12, window.innerWidth - PLANE_WIDTH - 36),
@@ -342,6 +372,14 @@ export function PixelSpider({ active }: { active: boolean }) {
     let heldDirection = 0;
     let horizontalHoldTime = 0;
     let planeMode: PlaneMode = 'plane';
+    let introWebVelocityBoosted = false;
+
+    const setIntroPhase = (phase: IntroPhase, time: number) => {
+      intro.phase = phase;
+      intro.phaseStartedAt = time;
+      element.dataset.intro = phase;
+      if (planeElement) planeElement.dataset.intro = phase;
+    };
 
     const updateAppearance = (motion: Motion) => {
       if (player.motion !== motion) {
@@ -388,6 +426,8 @@ export function PixelSpider({ active }: { active: boolean }) {
       player.grounded = false;
       player.lastGroundedAt = -Infinity;
       player.jumpRequestedAt = -Infinity;
+      player.jumpCount = 1;
+      player.backflipUntil = -Infinity;
       updatePlaneAppearance();
     };
 
@@ -516,11 +556,12 @@ export function PixelSpider({ active }: { active: boolean }) {
       return true;
     };
 
-    const releaseWeb = (jumpAway = false) => {
+    const releaseWeb = (jumpAway = false, boostedIntroRelease = false) => {
       const side = web.side;
       web.target?.removeAttribute('data-web-target');
       web.phase = 'idle';
       web.target = null;
+      introWebVelocityBoosted = false;
       element.dataset.web = 'idle';
       if (webElement) {
         webElement.dataset.state = 'idle';
@@ -531,28 +572,36 @@ export function PixelSpider({ active }: { active: boolean }) {
       const horizontalInput = Number(keys.has('right')) - Number(keys.has('left'));
       const awayDirection = side === 'left' ? -1 : side === 'right' ? 1 : player.direction === 'right' ? 1 : -1;
       const launchDirection = horizontalInput || awayDirection;
-      player.vx = launchDirection * MOVE_SPEED * 1.16;
-      player.vy = -JUMP_SPEED * 0.86;
+      if (boostedIntroRelease) {
+        const launchSpeed = Math.max(Math.abs(player.vx) * 1.22, window.innerWidth * 1.02, MOVE_SPEED * 6.4) * INTRO_VELOCITY_SCALE;
+        player.vx = launchDirection * launchSpeed;
+        player.vy = Math.min(player.vy, -JUMP_SPEED * 0.22);
+      } else {
+        player.vx = launchDirection * MOVE_SPEED * 1.16;
+        player.vy = -JUMP_SPEED * 0.86;
+      }
       player.grounded = false;
       player.lastGroundedAt = -Infinity;
       player.jumpRequestedAt = -Infinity;
+      player.jumpCount = Math.max(1, player.jumpCount);
       player.direction = launchDirection < 0 ? 'left' : 'right';
     };
 
-    const fireWeb = () => {
+    const fireWeb = (preferredTarget?: HTMLElement, boostedIntroPull = false) => {
       if (plane.phase === 'ridden') return;
       if (web.phase !== 'idle') {
         releaseWeb(false);
         return;
       }
 
-      const candidate = getWebTarget();
+      const candidate = preferredTarget ? { target: preferredTarget, rect: getWebTargetRect(preferredTarget) } : getWebTarget();
       if (!candidate) return;
       const attachment = getWebSide(candidate.rect);
       web.phase = 'pulling';
       web.target = candidate.target;
       web.side = attachment.side;
       web.offset = attachment.offset;
+      introWebVelocityBoosted = boostedIntroPull;
       web.target.dataset.webTarget = 'true';
       element.dataset.web = 'pulling';
       player.grounded = false;
@@ -561,11 +610,134 @@ export function PixelSpider({ active }: { active: boolean }) {
       updateWebAppearance();
     };
 
+    const finishIntro = (time: number) => {
+      keys.clear();
+      releaseWeb(false);
+      setIntroPhase('done', time);
+      player.vx = 0;
+      setIntroRunning(false);
+    };
+
+    const getDockRect = () => document.querySelector<HTMLElement>('.desktop-dock')?.getBoundingClientRect() ?? null;
+
+    const isStandingOnDock = (rect: DOMRect) => {
+      const overlapsDock = player.x + HERO_WIDTH - 5 > rect.left && player.x + 5 < rect.right;
+      return player.grounded && overlapsDock && Math.abs(player.y + HERO_HEIGHT - rect.top) <= 6;
+    };
+
+    const startDockReturn = (time: number, rect: DOMRect) => {
+      const playerCenter = player.x + HERO_WIDTH / 2;
+      const dockCenter = rect.left + rect.width / 2;
+      intro.returnDirection = playerCenter < dockCenter ? 'right' : 'left';
+      setIntroPhase('walk', time);
+    };
+
+    const runIntroControls = (time: number) => {
+      if (intro.phase === 'done') return;
+      if (intro.phase === 'drop') {
+        keys.clear();
+        if (!player.grounded) return;
+        player.vx = 0;
+        setIntroPhase('ready', time);
+        return;
+      }
+
+      if (intro.phase === 'ready') {
+        if (time - intro.phaseStartedAt < INTRO_READY_DURATION) return;
+        player.vx = 0;
+        player.jumpRequestedAt = time;
+        setIntroPhase('leap', time);
+        return;
+      }
+
+      if (intro.phase === 'leap') {
+        if (time - intro.phaseStartedAt < INTRO_LEAP_DURATION) return;
+        keys.clear();
+        keys.add('right');
+        const toutVaBienTarget = document.querySelector<HTMLElement>('.desktop-icon[aria-label="Tout Va Bien"] :is(.desktop-folder-stack, .desktop-artwork-stage > .desktop-artwork)');
+        if (toutVaBienTarget) fireWeb(toutVaBienTarget, true);
+        if (web.phase === 'idle') {
+          keys.clear();
+          player.vx = Math.max(window.innerWidth * 1.02, MOVE_SPEED * 6.4) * INTRO_VELOCITY_SCALE;
+          player.vy = Math.min(player.vy, -JUMP_SPEED * 0.22);
+          player.direction = 'right';
+          setIntroPhase('coast', time);
+          return;
+        }
+        setIntroPhase('swing', time);
+        return;
+      }
+
+      if (intro.phase === 'swing') {
+        if (web.phase !== 'hanging' && player.x < window.innerWidth * 0.68 && time - intro.phaseStartedAt < INTRO_WEB_HOLD_DURATION) return;
+        releaseWeb(true, true);
+        keys.clear();
+        setIntroPhase('coast', time);
+        return;
+      }
+
+      if (intro.phase === 'coast') {
+        keys.clear();
+        if (!player.grounded || Math.abs(player.vx) > INTRO_STOP_SPEED) return;
+
+        const rect = getDockRect();
+        if (!rect || isStandingOnDock(rect)) {
+          finishIntro(time);
+          return;
+        }
+
+        startDockReturn(time, rect);
+        return;
+      }
+
+      const rect = getDockRect();
+      if (!rect) {
+        finishIntro(time);
+        return;
+      }
+
+      if (intro.phase === 'walk') {
+        if (isStandingOnDock(rect)) {
+          finishIntro(time);
+          return;
+        }
+
+        const direction = intro.returnDirection ?? (player.x + HERO_WIDTH / 2 < rect.left + rect.width / 2 ? 'right' : 'left');
+        intro.returnDirection = direction;
+        keys.clear();
+        keys.add(direction);
+
+        const distanceToDock = direction === 'right' ? rect.left - (player.x + HERO_WIDTH) : player.x - rect.right;
+        if (player.grounded && distanceToDock <= DOCK_JUMP_DISTANCE) {
+          player.jumpRequestedAt = time;
+          setIntroPhase('return-jump', time);
+        }
+        return;
+      }
+
+      if (intro.phase === 'return-jump') {
+        if (isStandingOnDock(rect)) {
+          finishIntro(time);
+          return;
+        }
+
+        keys.clear();
+        if (intro.returnDirection) keys.add(intro.returnDirection);
+
+        if (player.grounded && time - intro.phaseStartedAt > 500) {
+          keys.clear();
+          startDockReturn(time, rect);
+        }
+        return;
+      }
+    };
+
     const press = (event: KeyboardEvent) => {
       if (isTypingTarget(event.target)) return;
       const action = getAction(event);
       if (!action) return;
       event.preventDefault();
+      if (intro.phase !== 'done') return;
       keys.add(action);
       if (!event.repeat && action === 'web') {
         fireWeb();
@@ -584,6 +756,7 @@ export function PixelSpider({ active }: { active: boolean }) {
     const release = (event: KeyboardEvent) => {
       const action = getAction(event);
       if (!action) return;
+      if (intro.phase !== 'done') return;
       keys.delete(action);
       if (plane.phase !== 'ridden' && (action === 'up' || action === 'action') && player.vy < -260) player.vy *= 0.58;
     };
@@ -594,6 +767,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       const delta = Math.min(Math.max((time - previousTime) / 1_000, 0), 0.034);
       previousTime = time;
 
+      runIntroControls(time);
       const input = Number(keys.has('right')) - Number(keys.has('left'));
 
       if (plane.phase === 'exploded' && time >= plane.respawnAt) resetPlane();
@@ -652,6 +826,8 @@ export function PixelSpider({ active }: { active: boolean }) {
         player.grounded = true;
         player.direction = plane.direction;
         player.lastGroundedAt = time;
+        player.jumpCount = 0;
+        player.backflipUntil = -Infinity;
 
         updatePlaneAppearance();
         updateAppearance('ride');
@@ -670,7 +846,9 @@ export function PixelSpider({ active }: { active: boolean }) {
           const distance = Math.hypot(dx, dy);
 
           if (web.phase === 'pulling' && distance > WEB_ARRIVAL_DISTANCE) {
-            const pullSpeed = Math.min(WEB_PULL_MAX_SPEED, WEB_PULL_MIN_SPEED + distance * 1.15);
+            const pullSpeed = introWebVelocityBoosted
+              ? Math.max(WEB_PULL_MAX_SPEED, window.innerWidth * 1.02) * INTRO_VELOCITY_SCALE
+              : Math.min(WEB_PULL_MAX_SPEED, WEB_PULL_MIN_SPEED + distance * 1.15);
             const travel = Math.min(distance, pullSpeed * delta);
             player.vx = (dx / distance) * pullSpeed;
             player.vy = (dy / distance) * pullSpeed;
@@ -684,6 +862,8 @@ export function PixelSpider({ active }: { active: boolean }) {
             player.y = hangPosition.y;
             player.vx = 0;
             player.vy = 0;
+            player.jumpCount = 0;
+            player.backflipUntil = -Infinity;
           }
 
           updateAppearance(web.phase === 'pulling' ? 'web' : 'hang');
@@ -701,19 +881,28 @@ export function PixelSpider({ active }: { active: boolean }) {
         player.vx = moveToward(player.vx, 0, (player.grounded ? GROUND_FRICTION : AIR_ACCELERATION * 0.16) * delta);
       }
 
-      if (player.grounded) player.lastGroundedAt = time;
-      const canJump = player.grounded || time - player.lastGroundedAt <= COYOTE_TIME;
-      if (time - player.jumpRequestedAt <= JUMP_BUFFER && canJump) {
-        player.vy = -JUMP_SPEED;
+      if (player.grounded) {
+        player.lastGroundedAt = time;
+        player.jumpCount = 0;
+        player.backflipUntil = -Infinity;
+      }
+      const canGroundJump = player.jumpCount === 0 && (player.grounded || time - player.lastGroundedAt <= COYOTE_TIME);
+      const canAirJump = !player.grounded && player.jumpCount < 2;
+      if (time - player.jumpRequestedAt <= JUMP_BUFFER && (canGroundJump || canAirJump)) {
+        const isDoubleJump = !canGroundJump && player.jumpCount === 1;
+        player.vy = isDoubleJump ? -DOUBLE_JUMP_SPEED : -JUMP_SPEED;
         player.grounded = false;
         player.lastGroundedAt = -Infinity;
         player.jumpRequestedAt = -Infinity;
+        player.jumpCount += 1;
+        if (isDoubleJump) player.backflipUntil = time + BACKFLIP_DURATION;
       }
 
       const previousBottom = player.y + HERO_HEIGHT;
       const nextX = wrapHorizontally(player.x + player.vx * delta, HERO_WIDTH);
 
-      player.vy = Math.min(player.vy + GRAVITY * delta, MAX_FALL_SPEED);
+      const activeGravity = intro.phase === 'drop' ? INTRO_DROP_GRAVITY : GRAVITY;
+      player.vy = Math.min(player.vy + activeGravity * delta, MAX_FALL_SPEED);
       if (!player.grounded && keys.has('down') && player.vy > -120) {
         player.vy = Math.min(player.vy + GRAVITY * 1.15 * delta, MAX_FALL_SPEED);
       }
@@ -723,7 +912,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       if (player.vy >= 0) {
         const nextBottom = nextY + HERO_HEIGHT;
 
-        if (plane.phase === 'ready') {
+        if (plane.phase === 'ready' && intro.phase === 'done') {
           const planeTop = plane.y + PLANE_SURFACE;
           const overlapsPlane = nextX + HERO_WIDTH - 4 > plane.x && nextX + 4 < plane.x + PLANE_WIDTH;
           const crossesPlane = previousBottom <= planeTop + 5 && nextBottom >= planeTop;
@@ -741,6 +930,8 @@ export function PixelSpider({ active }: { active: boolean }) {
             player.grounded = true;
             player.direction = plane.direction;
             player.lastGroundedAt = time;
+            player.jumpCount = 0;
+            player.backflipUntil = -Infinity;
             updatePlaneAppearance();
             updateAppearance('ride');
             animationFrame = requestAnimationFrame(frame);
@@ -759,6 +950,8 @@ export function PixelSpider({ active }: { active: boolean }) {
           player.vy = 0;
           player.grounded = true;
           player.lastGroundedAt = time;
+          player.jumpCount = 0;
+          player.backflipUntil = -Infinity;
         } else {
           player.grounded = false;
         }
@@ -769,7 +962,7 @@ export function PixelSpider({ active }: { active: boolean }) {
       player.x = nextX;
       player.y = Math.max(30, nextY);
 
-      const motion: Motion = !player.grounded ? (player.vy < 0 ? 'jump' : 'fall') : Math.abs(player.vx) > 18 ? 'walk' : 'idle';
+      const motion: Motion = !player.grounded ? (time < player.backflipUntil ? 'double-jump' : player.vy < 0 ? 'jump' : 'fall') : Math.abs(player.vx) > 18 ? 'walk' : 'idle';
       updateAppearance(motion);
       updatePlaneAppearance();
       animationFrame = requestAnimationFrame(frame);
@@ -777,6 +970,9 @@ export function PixelSpider({ active }: { active: boolean }) {
 
     element.dataset.motion = player.motion;
     element.dataset.web = 'idle';
+    element.dataset.intro = intro.phase;
+    if (planeElement) planeElement.dataset.intro = intro.phase;
+    setIntroRunning(intro.phase !== 'done');
     updateAppearance(player.motion);
     updatePlaneAppearance();
     updateWebAppearance();
@@ -793,8 +989,6 @@ export function PixelSpider({ active }: { active: boolean }) {
       window.removeEventListener('blur', clearKeys);
     };
   }, [active]);
-
-  if (!active) return null;
 
   return (
     <>
@@ -822,10 +1016,11 @@ export function PixelSpider({ active }: { active: boolean }) {
         data-direction="right"
         data-motion="fall"
         data-web="idle"
+        aria-hidden={active ? undefined : true}
         role="img"
         aria-label="Petit Spider-Man en pixel art contrôlable avec les flèches, ZQSD, E et la barre espace"
       >
-        {platformHintPhase === 'waiting' && (
+        {!introRunning && platformHintPhase === 'waiting' && (
           <span className="pixel-spider__hint" aria-hidden="true">
             ← → ou Q D · Z / espace · E toile
           </span>

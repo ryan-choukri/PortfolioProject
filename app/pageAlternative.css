@@ -607,7 +607,7 @@
 /* Petit personnage jouable : le SVG reste net et les membres changent de pose selon le mouvement. */
 .alternative-page .pixel-spider-web {
   position: fixed;
-  z-index: 9997;
+  z-index: 7;
   top: 0;
   left: 0;
   display: none;
@@ -682,7 +682,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9997;
+  z-index: 7;
   width: 80px;
   height: 48px;
   pointer-events: none;
@@ -1000,6 +1000,10 @@
   animation: pixel-plane-hint 3.4s ease forwards;
 }
 
+.alternative-page .pixel-plane:not([data-intro='done']) .pixel-plane__hint {
+  display: none;
+}
+
 .alternative-page .pixel-plane__explosion {
   position: absolute;
   z-index: 5;
@@ -1179,7 +1183,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 9998;
+  z-index: 8;
   width: 32px;
   height: 48px;
   pointer-events: none;
@@ -1189,6 +1193,7 @@
 
 .alternative-page .pixel-spider__body {
   --pixel-spider-facing: 1;
+  --pixel-backflip-turn: -1turn;
   position: absolute;
   inset: 0;
   display: block;
@@ -1197,6 +1202,7 @@
 
 .alternative-page .pixel-spider[data-direction='left'] .pixel-spider__body {
   --pixel-spider-facing: -1;
+  --pixel-backflip-turn: 1turn;
   transform: scaleX(-1);
 }
 
@@ -1316,6 +1322,27 @@
   transform: translate(1px, -2px) rotate(19deg);
 }
 
+.alternative-page .pixel-spider[data-motion='double-jump'] .pixel-spider__body {
+  transform-origin: center center;
+  animation: pixel-spider-backflip 520ms cubic-bezier(0.45, 0, 0.55, 1) both;
+}
+
+.alternative-page .pixel-spider[data-motion='double-jump'] .pixel-spider__arm--front {
+  transform: translate(1px, -1px) rotate(52deg);
+}
+
+.alternative-page .pixel-spider[data-motion='double-jump'] .pixel-spider__arm--back {
+  transform: translate(-1px, -1px) rotate(-52deg);
+}
+
+.alternative-page .pixel-spider[data-motion='double-jump'] .pixel-spider__leg--front {
+  transform: translate(1px, -3px) rotate(48deg);
+}
+
+.alternative-page .pixel-spider[data-motion='double-jump'] .pixel-spider__leg--back {
+  transform: translate(-1px, -3px) rotate(-48deg);
+}
+
 .alternative-page .pixel-spider[data-motion='fall'] .pixel-spider__arm--front {
   transform: translate(1px, 1px) rotate(38deg);
 }
@@ -1415,6 +1442,15 @@
   }
   50% {
     transform: rotate(20deg);
+  }
+}
+
+@keyframes pixel-spider-backflip {
+  from {
+    transform: scaleX(var(--pixel-spider-facing)) rotate(0turn);
+  }
+  to {
+    transform: scaleX(var(--pixel-spider-facing)) rotate(var(--pixel-backflip-turn));
   }
 }
 
