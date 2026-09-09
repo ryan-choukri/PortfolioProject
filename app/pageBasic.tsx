@@ -54,7 +54,7 @@ const experiencesVie: Experience[] = [
     company: 'Groupe de musique',
     role: 'Bassiste / Chanteur / Compositeur',
     period: 'Jan 2024 - Now',
-    description: `Création d’un groupe de rock/punk.<br />
+    description: `Création d’un groupe de rock.
 Composition et enregistrement de morceaux, organisation du travail en groupe. Creation de l'identité visuelle et présence en ligne.
 Relations avec les salles et programmateurs, gestion du booking, des concerts et des tournées.`,
   },

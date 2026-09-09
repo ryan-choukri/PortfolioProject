@@ -30,8 +30,8 @@ const oswaldMono = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: 'Ryan Choukri | Développeur Fullstack',
-  description: 'Ryan Choukri, développeur Full Stack · Product & Automation. Plus de 5 ans d’expérience en startup et SaaS : React, Next.js, UI/UX, IA et automatisation.',
+  title: 'Ryan Choukri | Développeur Fullstack· Product & Automation',
+  description: 'Développeur Full Stack · Product & Automation. Plus de 5 ans d’expérience en startup et SaaS : React, Next.js, UI/UX, IA et automatisation.',
   icons: {
     icon: '/favicon.ico',
   },
