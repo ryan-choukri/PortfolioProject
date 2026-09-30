@@ -175,11 +175,10 @@ export default function HomeAlternative() {
       style={{ backgroundImage: `url(${wallpaperUrl})` }}
       onPointerDown={(event) => {
         if (event.target === event.currentTarget) setSelected(null);
-      }}
-    >
+      }}>
       <div className="desktop-surface" inert={isBooting} aria-hidden={isBooting ? true : undefined}>
         <MenuBar onOpen={wm.open} crtEnabled={crtEnabled} onToggleCrt={() => setCrtEnabled((enabled) => !enabled)} />
-        <header ref={introRef} className="desktop-intro pointer-events-none relative px-6 pt-14 pb-5 text-white md:absolute md:top-[36%] md:left-[34%] md:w-[30%] md:p-0">
+        <header ref={introRef} className="desktop-intro pointer-events-none relative px-6 pt-14 pb-5 text-white md:absolute md:top-[13%] md:left-[34%] md:w-[30%] md:p-0">
           <p className="mb-1.5 text-[10px] font-medium tracking-[0.22em] text-white/75 uppercase">Portfolio · Paris</p>
           <h1 className="text-4xl leading-[1.05] font-semibold tracking-tight lg:text-5xl">{profile.name}</h1>
           <p className="mt-1.5 text-sm leading-snug text-white/90">
@@ -243,8 +242,7 @@ export default function HomeAlternative() {
             onToggleMaximize={() => wm.toggleMaximize(window.id)}
             onFocus={() => wm.focus(window.id)}
             onMove={(x, y) => wm.move(window.id, x, y)}
-            onResize={(width, height) => wm.resize(window.id, width, height)}
-          >
+            onResize={(width, height) => wm.resize(window.id, width, height)}>
             <WindowContent id={window.id} onOpen={(id) => wm.navigate(id, window.id)} />
           </OSWindow>
         ))}

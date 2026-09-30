@@ -144,8 +144,7 @@ function ProjectBody({ project, onOpen }: { project: Project; onOpen: (id: strin
           href={project.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-primary text-primary-foreground hover:bg-primary/85 mt-5 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors"
-        >
+          className="bg-primary text-primary-foreground hover:bg-primary/85 mt-5 inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors">
           Voir le projet <ArrowUpRight className="size-4" aria-hidden="true" />
         </a>
       )}
@@ -192,7 +191,7 @@ export function WindowContent({ id, onOpen }: { id: string; onOpen: (id: string)
     return (
       <article className="p-5 sm:p-7">
         <div className="mb-6 flex items-center gap-4">
-          <Image src={profile.portrait} alt={profile.name} width={80} height={80} className="size-20 rounded-2xl object-cover" />
+          <Image src={profile.portrait} alt={profile.name} width={80} height={80} className="size-20 rounded-2xl object-cover object-top" />
           <div>
             <p className="text-muted-foreground text-[10px] font-semibold tracking-[0.18em] uppercase">Enchanté, moi c’est</p>
             <h2 className="mt-1 text-3xl font-semibold tracking-tight">{profile.name}</h2>

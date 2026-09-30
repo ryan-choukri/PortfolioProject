@@ -4,7 +4,8 @@ import swipe from '@/assets/swipe.png';
 import mobilegame from '@/assets/mobilegame.png';
 import barbershop from '@/assets/barbershop.png';
 import douglas from '@/assets/douglas.png';
-import wallpaper from '@/assets/bigsur.jpg';
+import wallpaper from '@/assets/pixel_sur.png';
+// import wallpaper from '@/assets/bigsur.jpg';
 
 export const wallpaperUrl = wallpaper.src;
 
